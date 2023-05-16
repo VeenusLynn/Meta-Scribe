@@ -51,7 +51,9 @@ def get_champion_info_by_name(champion_name):
         response.raise_for_status()
         champion_data = response.json()
 
-        return champion_data['data']
+        champion_data = champion_data['data']
+        for champ in champion_data.values():
+            return champ
 
     except requests.exceptions.HTTPError as err:
         print(f"HTTP error occurred: {err}")
@@ -126,6 +128,8 @@ elif choice == '2':
         print(f"Attack Range: {champion_info['stats']['attackrange']}")
         print(f"Attack Speed: {champion_info['stats']['attackspeed']}")
         print(f"Movement Speed: {champion_info['stats']['movespeed']}")
+        print(f"Ally Tips: {champion_info['allytips']}")
+        print(f"Enemy Tips: {champion_info['enemytips']}")
         print(f"Passive: {champion_info['passive']['name']}")
         print(f"Passive Description: {champion_info['passive']['description']}")
         print(f"Q: {champion_info['spells'][0]['name']}")
@@ -143,3 +147,4 @@ elif choice == '2':
         print("Champion not found.")
 else:
     print("Invalid choice. Please select either 1 or 2.")
+
