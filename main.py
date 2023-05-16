@@ -23,7 +23,7 @@ def get_champion_rotation():
         print(f"Error occurred: {err}")
 
 
-def get_champion_info(champion_name):
+def get_champion_info_by_id(champion_id):
     url = 'https://ddragon.leagueoflegends.com/cdn/13.9.1/data/en_US/championFull.json'
 
     try:
@@ -40,6 +40,24 @@ def get_champion_info(champion_name):
         print(f"HTTP error occurred: {err}")
     except requests.exceptions.RequestException as err:
         print(f"Error occurred: {err}")
+
+
+def get_champion_info_by_name(champion_name):
+    champion_name = champion_name.capitalize()
+    url = f'https://ddragon.leagueoflegends.com/cdn/13.9.1/data/en_US/champion/{champion_name}.json'
+
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+        champion_data = response.json()
+
+        return champion_data['data']
+
+    except requests.exceptions.HTTPError as err:
+        print(f"HTTP error occurred: {err}")
+    except requests.exceptions.RequestException as err:
+        print(f"Error occurred: {err}")
+
 
 def get_champion_id(champion_name):
     url = 'https://ddragon.leagueoflegends.com/cdn/13.9.1/data/en_US/championFull.json'
@@ -73,7 +91,7 @@ if choice == '1':
         print("Champion Rotation:")
         print("------")
         for champion_id in champion_rotation:
-            champion_info = get_champion_info(champion_id)
+            champion_info = get_champion_info_by_id(champion_id)
             if champion_info:
                 print(f"Champion ID: {champion_id}")
                 print(f"Name: {champion_info['name']}")
@@ -84,9 +102,9 @@ if choice == '1':
 elif choice == '2':
     # Prompt the user for a champion name
     champion_name = input("Enter a champion name: ")
-    champion_id = get_champion_id(champion_name) 
+    # champion_id = get_champion_id(champion_name) 
 
-    champion_info = get_champion_info(champion_id)
+    champion_info = get_champion_info_by_name(champion_name)
     if champion_info:
         print(f"Champion ID: {champion_info['key']}")
         print(f"Name: {champion_info['name']}")
