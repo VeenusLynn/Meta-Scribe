@@ -2,12 +2,16 @@ import requests
 import dotenv
 import os
 from bs4 import BeautifulSoup
+import json
 
 
 dotenv.load_dotenv()
 
 # Get API key from .env file
 API_KEY = os.getenv('API_KEY') 
+
+VERSION = os.getenv('VERSION')
+
 
 def get_champion_rotation():
     url = f'https://euw1.api.riotgames.com/lol/platform/v3/champion-rotations?api_key={API_KEY}'
@@ -26,7 +30,7 @@ def get_champion_rotation():
 
 
 def get_champion_info_by_id(champion_id):
-    url = 'https://ddragon.leagueoflegends.com/cdn/13.9.1/data/en_US/championFull.json'
+    url = f'https://ddragon.leagueoflegends.com/cdn/{VERSION}/data/en_US/championFull.json'
 
     try:
         response = requests.get(url)
@@ -46,7 +50,7 @@ def get_champion_info_by_id(champion_id):
 
 def get_champion_info_by_name(champion_name):
     champion_name = champion_name.capitalize()
-    url = f'https://ddragon.leagueoflegends.com/cdn/13.9.1/data/en_US/champion/{champion_name}.json'
+    url = f'https://ddragon.leagueoflegends.com/cdn/{VERSION}/data/en_US/champion/{champion_name}.json'
 
     try:
         response = requests.get(url)
@@ -64,7 +68,7 @@ def get_champion_info_by_name(champion_name):
 
 
 def get_champion_id(champion_name):
-    url = 'https://ddragon.leagueoflegends.com/cdn/13.9.1/data/en_US/championFull.json'
+    url = f'https://ddragon.leagueoflegends.com/cdn/{VERSION}/data/en_US/championFull.json'
 
     try:
         response = requests.get(url)
@@ -83,7 +87,7 @@ def get_champion_id(champion_name):
 
 def get_item_info_by_name(item_name):
     item_name = item_name.capitalize()
-    url = f'https://ddragon.leagueoflegends.com/cdn/13.9.1/data/en_US/item.json'
+    url = f'https://ddragon.leagueoflegends.com/cdn/{VERSION}/data/en_US/item.json'
 
     try:
         response = requests.get(url)
@@ -185,7 +189,7 @@ def main():
             
     
     else:
-        print("Invalid choice. Please select either 1 or 2.")
+        print("Invalid choice. Please select either 1, 2 or 3.")
 
 
 if __name__ == '__main__':
