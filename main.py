@@ -1,6 +1,8 @@
 import requests
 import dotenv
 import os
+from bs4 import BeautifulSoup
+
 
 dotenv.load_dotenv()
 
@@ -79,74 +81,112 @@ def get_champion_id(champion_name):
     except requests.exceptions.RequestException as err:
         print(f"Error occurred: {err}")
 
-# Prompt the user for their choice
-print("Choose an option:")
-print("1. See current champion rotation")
-print("2. Get information about a specific champion")
-choice = input("Enter your choice (1 or 2): ")
+def get_item_info_by_name(item_name):
+    item_name = item_name.capitalize()
+    url = f'https://ddragon.leagueoflegends.com/cdn/13.9.1/data/en_US/item.json'
 
-if choice == '1':
-    # Get champion rotation
-    champion_rotation = get_champion_rotation()
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+        item_data = response.json()
 
-    if champion_rotation:
-        print("Champion Rotation:")
-        print("------")
-        for champion_id in champion_rotation:
-            champion_info = get_champion_info_by_id(champion_id)
-            if champion_info:
-                print(f"Champion ID: {champion_id}")
-                print(f"Name: {champion_info['name']}")
-                print(f"Title: {champion_info['title']}")
-                print("------")
+        item_data = item_data['data']
+        for item in item_data.values():
+            if item['name'].lower() == item_name.lower():
+                return item
+
+    except requests.exceptions.HTTPError as err:
+        print(f"HTTP error occurred: {err}")
+    except requests.exceptions.RequestException as err:
+        print(f"Error occurred: {err}")
+
+
+def main():
+    # Prompt the user for their choice
+    print("Choose an option:")
+    print("1. See current champion rotation")
+    print("2. Get information about a specific champion")
+    print("3. Get information about a specific item")
+    choice = input("Enter your choice (1, 2 or 3): ")
+
+    if choice == '1':
+        # Get champion rotation
+        champion_rotation = get_champion_rotation()
+
+        if champion_rotation:
+            print("Champion Rotation:")
+            print("------")
+            for champion_id in champion_rotation:
+                champion_info = get_champion_info_by_id(champion_id)
+                if champion_info:
+                    print(f"Champion ID: {champion_id}")
+                    print(f"Name: {champion_info['name']}")
+                    print(f"Title: {champion_info['title']}")
+                    print("------")
+        else:
+            print("Failed to fetch champion rotation.")
+    elif choice == '2':
+        # Prompt the user for a champion name
+        champion_name = input("Enter a champion name: ")
+        # champion_id = get_champion_id(champion_name) 
+
+        champion_info = get_champion_info_by_name(champion_name)
+        if champion_info:
+            print(f"Champion ID: {champion_info['key']}")
+            print(f"Name: {champion_info['name']}")
+            print(f"Title: {champion_info['title']}")
+            print(f"Lore: {champion_info['lore']}")
+            print(f"Attack: {champion_info['info']['attack']}")
+            print(f"Defense: {champion_info['info']['defense']}")
+            print(f"Magic: {champion_info['info']['magic']}")
+            print(f"Difficulty: {champion_info['info']['difficulty']}")
+            print(f"Type: {champion_info['tags']}")
+            print(f"Energy/Mana: {champion_info['partype']}")
+            print(f"Health: {champion_info['stats']['hp']}")
+            print(f"Health Regen: {champion_info['stats']['hpregen']}")
+            print(f"Mana: {champion_info['stats']['mp']}")
+            print(f"Mana Regen: {champion_info['stats']['mpregen']}")
+            print(f"Armor: {champion_info['stats']['armor']}")
+            print(f"Magic Resist: {champion_info['stats']['spellblock']}")
+            print(f"Attack Damage: {champion_info['stats']['attackdamage']}")
+            print(f"Attack Range: {champion_info['stats']['attackrange']}")
+            print(f"Attack Speed: {champion_info['stats']['attackspeed']}")
+            print(f"Movement Speed: {champion_info['stats']['movespeed']}")
+            print(f"Ally Tips: {champion_info['allytips']}")
+            print(f"Enemy Tips: {champion_info['enemytips']}")
+            print(f"Passive: {champion_info['passive']['name']}")
+            print(f"Passive Description: {champion_info['passive']['description']}")
+            print(f"Q: {champion_info['spells'][0]['name']}")
+            print(f"Q Description: {champion_info['spells'][0]['description']}")
+            print(f"W: {champion_info['spells'][1]['name']}")
+            print(f"W Description: {champion_info['spells'][1]['description']}")
+            print(f"E: {champion_info['spells'][2]['name']}")
+            print(f"E Description: {champion_info['spells'][2]['description']}")
+            print(f"R: {champion_info['spells'][3]['name']}")
+            print(f"R Description: {champion_info['spells'][3]['description']}")
+
+
+            # TO DO : Add more champion info
+        else:
+            print("Champion not found.")
+    
+    elif choice == '3':
+
+        item_name = input("Enter an item name: ")
+        item_info = get_item_info_by_name(item_name)
+        soup = BeautifulSoup(item_info['description'], 'html.parser')
+        for br in soup.find_all('br'):
+            br.replace_with('\n')
+
+        if item_info:
+            print(f"Item name: {item_info['name']}")
+            print(f"Item stats:\n{soup.get_text()}")
+            print(f"Item cost: {item_info['gold']['total']} Gold")
+            
+    
     else:
-        print("Failed to fetch champion rotation.")
-elif choice == '2':
-    # Prompt the user for a champion name
-    champion_name = input("Enter a champion name: ")
-    # champion_id = get_champion_id(champion_name) 
-
-    champion_info = get_champion_info_by_name(champion_name)
-    if champion_info:
-        print(f"Champion ID: {champion_info['key']}")
-        print(f"Name: {champion_info['name']}")
-        print(f"Title: {champion_info['title']}")
-        print(f"Lore: {champion_info['lore']}")
-        print(f"Attack: {champion_info['info']['attack']}")
-        print(f"Defense: {champion_info['info']['defense']}")
-        print(f"Magic: {champion_info['info']['magic']}")
-        print(f"Difficulty: {champion_info['info']['difficulty']}")
-        print(f"Type: {champion_info['tags']}")
-        print(f"Energy/Mana: {champion_info['partype']}")
-        print(f"Health: {champion_info['stats']['hp']}")
-        print(f"Health Regen: {champion_info['stats']['hpregen']}")
-        print(f"Mana: {champion_info['stats']['mp']}")
-        print(f"Mana Regen: {champion_info['stats']['mpregen']}")
-        print(f"Armor: {champion_info['stats']['armor']}")
-        print(f"Magic Resist: {champion_info['stats']['spellblock']}")
-        print(f"Attack Damage: {champion_info['stats']['attackdamage']}")
-        print(f"Attack Range: {champion_info['stats']['attackrange']}")
-        print(f"Attack Speed: {champion_info['stats']['attackspeed']}")
-        print(f"Movement Speed: {champion_info['stats']['movespeed']}")
-        print(f"Ally Tips: {champion_info['allytips']}")
-        print(f"Enemy Tips: {champion_info['enemytips']}")
-        print(f"Passive: {champion_info['passive']['name']}")
-        print(f"Passive Description: {champion_info['passive']['description']}")
-        print(f"Q: {champion_info['spells'][0]['name']}")
-        print(f"Q Description: {champion_info['spells'][0]['description']}")
-        print(f"W: {champion_info['spells'][1]['name']}")
-        print(f"W Description: {champion_info['spells'][1]['description']}")
-        print(f"E: {champion_info['spells'][2]['name']}")
-        print(f"E Description: {champion_info['spells'][2]['description']}")
-        print(f"R: {champion_info['spells'][3]['name']}")
-        print(f"R Description: {champion_info['spells'][3]['description']}")
+        print("Invalid choice. Please select either 1 or 2.")
 
 
-        # TO DO : Add more champion info
-    else:
-        print("Champion not found.")
-else:
-    print("Invalid choice. Please select either 1 or 2.")
-
-
-# alger
+if __name__ == '__main__':
+    main()
