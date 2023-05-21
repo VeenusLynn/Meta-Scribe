@@ -14,8 +14,13 @@ API_KEY = os.getenv('API_KEY')
 def get_version():
     url = f'https://ddragon.leagueoflegends.com/api/versions.json'
 
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'
+    }
+    
+
     try:
-        response = requests.get(url)
+        response = requests.get(url, headers=headers)
         response.raise_for_status()
         version_data = response.json()
 
@@ -30,11 +35,116 @@ def get_version():
 VERSION = get_version()#
 ########################
 
+def get_champion_winrate(champion_name):
+    url = f'https://u.gg/lol/champions/{champion_name}/build'
+
+    # Set custom headers to mimic a web browser
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'
+    }
+
+    # Send an HTTP GET request to the u.gg Irelia build page with custom headers
+    response = requests.get(url, headers=headers)
+
+    # Check if the request was successful
+    if response.status_code == 200:
+        # Parse the HTML content using BeautifulSoup
+        soup = BeautifulSoup(response.content, 'html.parser')
+
+        # Find the elements containing the win rate
+        win_rate_element = soup.find('span', {'class': 'win-rate'})
+
+        # Extract the text from the elements
+        win_rate = win_rate_element.text.strip()
+
+        if win_rate_element:
+            # Extract the text from the element and add a space after the percentage sign
+            win_rate = win_rate_element.text.strip().replace('WR', '')
+
+            return win_rate
+
+    else:
+        # Request was unsuccessful
+        print(f"Failed to retrieve winrate. Status code: {response.status_code}")
+        return None
+ 
+def get_champion_pickrate(champion_name):
+    url = f'https://u.gg/lol/champions/{champion_name}/build'
+
+    # Set custom headers to mimic a web browser
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'
+    }
+
+    # Send an HTTP GET request to the u.gg champion build page with custom headers
+    response = requests.get(url, headers=headers)
+
+    # Check if the request was successful
+    if response.status_code == 200:
+        # Parse the HTML content using BeautifulSoup
+        soup = BeautifulSoup(response.content, 'html.parser')
+
+        # Find the elements containing the pick rate
+        pick_rate_element = soup.find('div', {'class': 'pick-rate'})
+
+        # Extract the text from the element
+        pick_rate = pick_rate_element.text.strip()
+
+        if pick_rate_element:
+            # Extract the text from the element and add a space after the percentage sign
+            pick_rate = pick_rate_element.text.strip().replace('%', '% ').replace('Pick Rate', '')
+
+            return pick_rate
+
+    else:
+        # Request was unsuccessful
+        print(f"Failed to retrieve pick rate. Status code: {response.status_code}")
+        return None
+
+def get_champion_banrate(champion_name):
+    url = f'https://u.gg/lol/champions/{champion_name}/build'
+
+    # Set custom headers to mimic a web browser
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'
+    }
+
+    # Send an HTTP GET request to the u.gg champion build page with custom headers
+    response = requests.get(url, headers=headers)
+
+    # Check if the request was successful
+    if response.status_code == 200:
+        # Parse the HTML content using BeautifulSoup
+        soup = BeautifulSoup(response.content, 'html.parser')
+
+        # Find the elements containing the pick rate
+        ban_rate_element = soup.find('div', {'class': 'ban-rate'})
+
+        # Extract the text from the element
+        ban_rate = ban_rate_element.text.strip()
+
+        if ban_rate_element:
+            # Extract the text from the element and add a space after the percentage sign
+            ban_rate = ban_rate_element.text.strip().replace('%', '% ').replace('Ban Rate', '')
+
+            return ban_rate
+
+    else:
+        # Request was unsuccessful
+        print(f"Failed to retrieve pick rate. Status code: {response.status_code}")
+        return None
+
+
 def get_champion_rotation():
     url = f'https://euw1.api.riotgames.com/lol/platform/v3/champion-rotations?api_key={API_KEY}'
 
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'
+    }
+    
+
     try:
-        response = requests.get(url)
+        response = requests.get(url, headers=headers)
         response.raise_for_status()
         rotation_data = response.json()
 
@@ -49,8 +159,13 @@ def get_champion_rotation():
 def get_champion_info_by_id(champion_id):
     url = f'https://ddragon.leagueoflegends.com/cdn/{VERSION}/data/en_US/championFull.json'
 
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'
+    }
+    
+
     try:
-        response = requests.get(url)
+        response = requests.get(url, headers=headers)
         response.raise_for_status()
         champion_data = response.json()
 
@@ -69,8 +184,13 @@ def get_champion_info_by_name(champion_name):
     champion_name = champion_name.capitalize()
     url = f'https://ddragon.leagueoflegends.com/cdn/{VERSION}/data/en_US/champion/{champion_name}.json'
 
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'
+    }
+    
+
     try:
-        response = requests.get(url)
+        response = requests.get(url, headers=headers)
         response.raise_for_status()
         champion_data = response.json()
 
@@ -87,8 +207,13 @@ def get_champion_info_by_name(champion_name):
 def get_champion_id(champion_name):
     url = f'https://ddragon.leagueoflegends.com/cdn/{VERSION}/data/en_US/championFull.json'
 
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'
+    }
+    
+
     try:
-        response = requests.get(url)
+        response = requests.get(url, headers=headers)
         response.raise_for_status()
         champion_data = response.json()
 
@@ -106,8 +231,13 @@ def get_item_info_by_name(item_name):
 
     url = f'https://ddragon.leagueoflegends.com/cdn/{VERSION}/data/en_US/item.json'
 
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'
+    }
+    
+
     try:
-        response = requests.get(url)
+        response = requests.get(url, headers=headers)
         response.raise_for_status()
         item_data = response.json()
 
@@ -124,8 +254,13 @@ def get_item_info_by_name(item_name):
 def get_rune_info_by_name(rune_name):
     url = f'https://ddragon.leagueoflegends.com/cdn/{VERSION}/data/en_US/runesReforged.json'
 
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'
+    }
+    
+
     try:
-        response = requests.get(url)
+        response = requests.get(url, headers=headers)
         response.raise_for_status()
         rune_data = response.json()
 
@@ -145,8 +280,13 @@ def get_rune_info_by_name(rune_name):
 def get_summoner_spell_info_by_name(spell_name):
     url = f'https://ddragon.leagueoflegends.com/cdn/{VERSION}/data/en_US/summoner.json'
 
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'
+    }
+    
+
     try:
-        response = requests.get(url)
+        response = requests.get(url, headers=headers)
         response.raise_for_status()
         spell_data = response.json()
 
@@ -166,8 +306,13 @@ def get_champion_splash_art(champion_name):
     champion_name = champion_name.capitalize()
     url = f'https://ddragon.leagueoflegends.com/cdn/img/champion/splash/{champion_name}_0.jpg'
 
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'
+    }
+    
+
     try:
-        response = requests.get(url)
+        response = requests.get(url, headers=headers)
         response.raise_for_status()
         return url
 
@@ -180,8 +325,13 @@ def get_champion_skin_splash_art(champion_name, skin_number):
     champion_name = champion_name.capitalize()
     url = f'https://ddragon.leagueoflegends.com/cdn/img/champion/splash/{champion_name}_{skin_number}.jpg'
 
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'
+    }
+    
+
     try:
-        response = requests.get(url)
+        response = requests.get(url, headers=headers)
         response.raise_for_status()
         return url
 
@@ -201,6 +351,7 @@ def main():
     print("5. Get information about a specific summoner spell")
     print("6. Get a champion's splash art")
     print("7. Get a champion's skin splash art")
+    print("8. Get a champion's current stats")
     choice = input("Enter your choice: ")
 
     if choice == '1':
@@ -319,6 +470,21 @@ def main():
 
         else:
             print("Skin not found.")
+
+    elif choice == '8':
+        champion_name = input("Enter a champion name: ")
+        champion_winrate = get_champion_winrate(champion_name)
+        champion_pickrate = get_champion_pickrate(champion_name)
+        champion_banrate = get_champion_banrate(champion_name)
+
+        if champion_winrate:
+            print(f"Win rate: {champion_winrate}")
+            print(f"Pick rate: {champion_pickrate}")
+            print(f"Ban rate: {champion_banrate}")
+
+        else:
+            print("Champion not found.")
+
 
     else:
         print("Invalid choice.")
