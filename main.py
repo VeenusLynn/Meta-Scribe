@@ -205,6 +205,7 @@ def extract_div_html(url, div_class):
     return None
 
 def get_champion_counters(champion_name):
+
     # Extract the HTML code of the div with class 'content'
     html_code = extract_div_html(f'https://u.gg/lol/champions/{champion_name.lower()}/counter', 'champion-profile-page')
 
@@ -266,6 +267,47 @@ def get_champion_counters(champion_name):
         print(f"Win Rate: {pick['win_rate']}")
         print(f"Total Games: {pick['total_games']}")
         print("----------------------------------")
+
+def get_champion_recommended_runes(champion_name):
+
+    html_code = extract_div_html(f'https://u.gg/lol/champions/{champion_name.lower()}/build', 'rune-trees-container-2 media-query media-query_MOBILE_LARGE__DESKTOP_LARGE')
+
+    soup = BeautifulSoup(html_code, 'html.parser')
+
+    primary_tree = soup.find(class_='primary-tree')
+    primary_tree_name = primary_tree.find(class_='perk-style-title').text
+    resolve_keystone = primary_tree.find(class_='perk keystone perk-active')
+    resolve_runes = primary_tree.find_all(class_='perk perk-active')
+
+    secondary_tree = soup.find(class_='secondary-tree')
+    secondary_tree_name = secondary_tree.find(class_='perk-style-title').text
+    inspiration_keystone = secondary_tree.find(class_='perk perk-active')
+    inspiration_runes = secondary_tree.find_all(class_='perk perk-active')
+
+    stat_shards = soup.find(class_='stat-shards-container_v2')
+    stat_shard_rows = stat_shards.find_all(class_='perk-row stat-shard-row')
+    stat_shards_active = [row.find(class_='shard shard-active') for row in stat_shard_rows]
+
+    primary_runes = [resolve_keystone.img['alt']] + [rune.img['alt'] for rune in resolve_runes]
+    secondary_runes = [inspiration_keystone.img['alt']] + [rune.img['alt'] for rune in inspiration_runes]
+    stat_shards = [shard.img['alt'] for shard in stat_shards_active]
+
+    print(f"Recommended Runes for {champion_name.capitalize()}: \n")
+
+    print(f"Primary Tree : {primary_tree_name}\n ")
+    print("Primary Runes:")
+    for rune in list(dict.fromkeys(primary_runes)):
+        print(rune.replace('The Rune', '').replace("The Keystone",'').strip())
+
+    print(f"\nSecondary Tree : {secondary_tree_name}\n")
+    print("Secondary Runes:")
+    for rune in list(dict.fromkeys(secondary_runes)):
+        print(rune.replace('The Rune', '').strip())
+
+    print("\nStat Shards:")
+    for shard in list(dict.fromkeys(stat_shards)):
+        print(shard.replace('The','').replace('Shard', '').strip())
+
 
 def get_champion_rotation():
     url = f'https://euw1.api.riotgames.com/lol/platform/v3/champion-rotations?api_key={API_KEY}'
@@ -483,6 +525,7 @@ def main():
     print("7. Get a champion's skin splash art")
     print("8. Get a champion's current stats")
     print("9. Get a champion's counters")
+    print("10. Get a champion's recommended runes")
     choice = input("Enter your choice: ")
 
     if choice == '1':
@@ -622,9 +665,15 @@ def main():
         champion_name = input("Enter a champion name: ")
         get_champion_counters(champion_name)
 
+    elif choice == '10': 
+        champion_name = input("Enter a champion name: ")
+        get_champion_recommended_runes(champion_name)
+
+
     else:
         print("Invalid choice.")
 
 
 if __name__ == '__main__':
     main()
+
