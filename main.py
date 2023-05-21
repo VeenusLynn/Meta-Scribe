@@ -204,6 +204,41 @@ def extract_div_html(url, div_class):
     
     return None
 
+def extract_a_html(url, target_href):
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'
+    }
+
+    # Send a GET request to the URL
+    response = requests.get(url, headers=headers)
+
+    # Check if the request was successful
+    if response.status_code == 200:
+        # Get the HTML content of the page
+        html_content = response.text
+
+        # Create a BeautifulSoup object for parsing the HTML
+        soup = BeautifulSoup(html_content, 'html.parser')
+
+        # Find all <a> tags with the specified href
+        target_a_tags = soup.find_all('a', href=target_href)
+
+        # Check if any <a> tags exist
+        if target_a_tags:
+            # Concatenate the HTML codes of the <a> tags
+            a_html = ''.join(str(a_tag) for a_tag in target_a_tags)
+
+            # Return the concatenated <a> tag HTML codes
+            return a_html
+
+        else:
+            print(f"No <a> tags found with href '{target_href}'.")
+
+    else:
+        print(f"Request failed with status code {response.status_code}.")
+
+    return None
+
 def get_champion_counters(champion_name):
 
     # Extract the HTML code of the div with class 'content'
@@ -325,6 +360,41 @@ def get_champion_recommended_spells(champion_name):
     # Print the summoner spell names
     for spell_name in summoner_spell_names:
         print(spell_name.replace('Summoner Spell', '').strip())
+
+def get_champion_recommended_build(champion_name):
+    
+    html = extract_a_html(f'https://www.leagueofgraphs.com/champions/builds/{champion_name.lower()}', f'/champions/items/{champion_name.lower()}')
+    
+    soup = BeautifulSoup(html, 'html.parser')
+    item_divs = soup.find_all('div', class_='iconsRow')
+    
+    print(f"\nRecommended Build for {champion_name.capitalize()}: \n")
+    
+    for item_div in item_divs:
+        items = item_div.find_all('img')
+        names = [item['alt'] for item in items]
+
+        
+        if 'Starting Build' in item_div.parent.get_text():
+            print("Starter Items:")
+            for name in names:
+                print(name)
+            print()
+        elif 'Core Build' in item_div.parent.get_text():
+            print("Core Build:")
+            for name in names:
+                print(name)
+            print()
+        elif 'Boots' in item_div.parent.get_text():
+            print("Boots:")
+            for name in names:
+                print(name)
+            print()
+        elif 'End Build' in item_div.parent.get_text():
+            print("Final Build:")
+            for name in names:
+                print(name)
+            print()
 
 def get_champion_rotation():
     url = f'https://euw1.api.riotgames.com/lol/platform/v3/champion-rotations?api_key={API_KEY}'
@@ -544,6 +614,7 @@ def main():
     print("9. Get a champion's counters")
     print("10. Get a champion's recommended runes")
     print("11. Get a champion's recommended spells")
+    print("12. Get a champion's recommended build")
     choice = input("Enter your choice: ")
 
     if choice == '1':
@@ -690,6 +761,10 @@ def main():
     elif choice == '11':
         champion_name = input("Enter a champion name: ")
         get_champion_recommended_spells(champion_name)
+
+    elif choice == '12':
+        champion_name = input("Enter a champion name: ")
+        get_champion_recommended_build(champion_name)
 
     else:
         print("Invalid choice.")
