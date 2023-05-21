@@ -239,6 +239,27 @@ def extract_a_html(url, target_href):
 
     return None
 
+def get_champion_skill_order(champion_name):
+
+    html = extract_div_html(f'https://u.gg/lol/champions/{champion_name.lower()}/build', 'skill-path-container')
+
+    soup = BeautifulSoup(html, 'html.parser')
+    skill_order_rows = soup.find_all(class_='skill-order-row')
+
+    print(f"Recommended Skill Order for {champion_name.capitalize()}: \n")
+
+    for row in skill_order_rows:
+        skill_label = row.find(class_='skill-label').text.strip()
+        skill_name = row.find(class_='skill-name').text.strip()
+        skill_levels = [int(div.text.strip()) if div.text.strip() != '' else 0 for div in row.find_all('div', class_='skill-up')]
+
+        print(f"Skill: {skill_label}")
+        print(f"Name: {skill_name}")
+        print("Levels:", end=' ')
+        for level in skill_levels:
+            print(level, end=' ')
+        print("\n")
+
 def get_champion_counters(champion_name):
 
     # Extract the HTML code of the div with class 'content'
@@ -615,6 +636,7 @@ def main():
     print("10. Get a champion's recommended runes")
     print("11. Get a champion's recommended spells")
     print("12. Get a champion's recommended build")
+    print("13. Get a champion's recommended skill order")
     choice = input("Enter your choice: ")
 
     if choice == '1':
@@ -765,6 +787,10 @@ def main():
     elif choice == '12':
         champion_name = input("Enter a champion name: ")
         get_champion_recommended_build(champion_name)
+
+    elif choice == '13':
+        champion_name = input("Enter a champion name: ")
+        get_champion_skill_order(champion_name)
 
     else:
         print("Invalid choice.")
