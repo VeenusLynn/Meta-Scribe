@@ -68,7 +68,6 @@ def get_champion_tier(champion_name):
         print(f"Failed to retrieve winrate. Status code: {response.status_code}")
         return None
  
-
 def get_champion_winrate(champion_name):
     url = f'https://u.gg/lol/champions/{champion_name}/build'
 
@@ -227,7 +226,7 @@ def get_champion_counters(champion_name):
 
         best_picks.append({
             'champion_name': champion_name,
-            'win_rate': win_rate,
+            'win_rate': win_rate.replace('WR',''),
             'total_games': total_games
         })
 
@@ -244,7 +243,7 @@ def get_champion_counters(champion_name):
         worst_picks.append({
             # 'champion_image': champion_image,
             'champion_name': champion_name,
-            'win_rate': win_rate,
+            'win_rate': win_rate.replace('WR',''),
             'total_games': total_games
         })
 
@@ -288,7 +287,6 @@ def get_champion_rotation():
     except requests.exceptions.RequestException as err:
         print(f"Error occurred: {err}")
 
-
 def get_champion_info_by_id(champion_id):
     url = f'https://ddragon.leagueoflegends.com/cdn/{VERSION}/data/en_US/championFull.json'
 
@@ -312,7 +310,6 @@ def get_champion_info_by_id(champion_id):
     except requests.exceptions.RequestException as err:
         print(f"Error occurred: {err}")
 
-
 def get_champion_info_by_name(champion_name):
     champion_name = champion_name.capitalize()
     url = f'https://ddragon.leagueoflegends.com/cdn/{VERSION}/data/en_US/champion/{champion_name}.json'
@@ -335,7 +332,6 @@ def get_champion_info_by_name(champion_name):
         print(f"HTTP error occurred: {err}")
     except requests.exceptions.RequestException as err:
         print(f"Error occurred: {err}")
-
 
 def get_champion_id(champion_name):
     url = f'https://ddragon.leagueoflegends.com/cdn/{VERSION}/data/en_US/championFull.json'
