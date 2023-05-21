@@ -176,6 +176,21 @@ def get_champion_splash_art(champion_name):
     except requests.exceptions.RequestException as err:
         print(f"Error occurred: {err}")
 
+def get_champion_skin_splash_art(champion_name, skin_number):
+    champion_name = champion_name.capitalize()
+    url = f'https://ddragon.leagueoflegends.com/cdn/img/champion/splash/{champion_name}_{skin_number}.jpg'
+
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+        return url
+
+    except requests.exceptions.HTTPError as err:
+        print(f"HTTP error occurred: {err}")
+    except requests.exceptions.RequestException as err:
+        print(f"Error occurred: {err}")
+
+
 def main():
     # Prompt the user for their choice
     print("Choose an option:")
@@ -185,6 +200,7 @@ def main():
     print("4. Get information about a specific rune")
     print("5. Get information about a specific summoner spell")
     print("6. Get a champion's splash art")
+    print("7. Get a champion's skin splash art")
     choice = input("Enter your choice: ")
 
     if choice == '1':
@@ -293,8 +309,19 @@ def main():
         else:
             print("Spell not found.")
 
+    elif choice == '7':
+        champion_name = input("Enter a champion name: ")
+        skin_number = input("Enter a skin number: ")
+        champion_skin_splash_art = get_champion_skin_splash_art(champion_name, skin_number)
+
+        if champion_skin_splash_art:
+            print(f"Splash art: {champion_skin_splash_art}")
+
+        else:
+            print("Skin not found.")
+
     else:
-        print("Invalid choice. Please select either 1, 2 or 3.")
+        print("Invalid choice.")
 
 
 if __name__ == '__main__':
