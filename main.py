@@ -134,6 +134,99 @@ def get_champion_banrate(champion_name):
         print(f"Failed to retrieve pick rate. Status code: {response.status_code}")
         return None
 
+def extract_div_html(url, div_class):
+
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'
+    }
+    
+
+    # Send a GET request to the URL
+    response = requests.get(url, headers=headers)
+    
+    # Check if the request was successful
+    if response.status_code == 200:
+        # Get the HTML content of the page
+        html_content = response.text
+        
+        # Create a BeautifulSoup object for parsing the HTML
+        soup = BeautifulSoup(html_content, 'html.parser')
+        
+        # Find the div with the specified class name
+        target_div = soup.find('div', class_=div_class)
+        
+        # Check if the div exists
+        if target_div:
+            # Get the HTML code of the div
+            div_html = str(target_div)
+            
+            # Return the div HTML
+            return div_html
+        
+        else:
+            print(f"Div with class '{div_class}' not found.")
+    
+    else:
+        print(f"Request failed with status code {response.status_code}.")
+    
+    return None
+
+def get_champion_counters(champion_name):
+    # Extract the HTML code of the div with class 'content'
+    html_code = extract_div_html(f'https://u.gg/lol/champions/{champion_name.lower()}/counter', 'champion-profile-page')
+
+    soup = BeautifulSoup(html_code, 'html.parser')
+
+    # Extract Best Picks vs Irelia
+    best_picks_div = soup.find('div', class_='counters-column')
+    best_picks_title = best_picks_div.find('div', text='Best Picks vs Irelia')
+    best_picks_list = best_picks_title.find_next('div', class_='counters-list').find_all('a')
+
+    best_picks = []
+    for pick in best_picks_list:
+        champion_name = pick.find('div', class_='champion-name').text
+        win_rate = pick.find('div', class_='win-rate').text
+        total_games = pick.find('div', class_='total-games').text
+
+        best_picks.append({
+            'champion_name': champion_name,
+            'win_rate': win_rate,
+            'total_games': total_games
+        })
+
+    # Extract Worst Picks vs Irelia
+    worst_picks_div = soup.find('div', class_='counters-list worst-win-rate')
+    worst_picks_list = worst_picks_div.find_all('a')
+
+    worst_picks = []
+    for pick in worst_picks_list:
+        champion_name = pick.find('div', class_='champion-name').text
+        win_rate = pick.find('div', class_='win-rate').text
+        total_games = pick.find('div', class_='total-games').text
+
+        worst_picks.append({
+            # 'champion_image': champion_image,
+            'champion_name': champion_name,
+            'win_rate': win_rate,
+            'total_games': total_games
+        })
+
+    # Print the extracted information
+    print('\nBest Picks vs Irelia:\n')
+    print("----------------------------------")
+    for pick in best_picks:
+        print(f"Champion Name: {pick['champion_name']}")
+        print(f"Win Rate: {pick['win_rate']}")
+        print(f"Total Games: {pick['total_games']}")
+        print("----------------------------------")
+
+    print('\nWorst Picks vs Irelia:\n')
+    print("----------------------------------")
+    for pick in worst_picks:
+        print(f"Champion Name: {pick['champion_name']}")
+        print(f"Win Rate: {pick['win_rate']}")
+        print(f"Total Games: {pick['total_games']}")
+        print("----------------------------------")
 
 def get_champion_rotation():
     url = f'https://euw1.api.riotgames.com/lol/platform/v3/champion-rotations?api_key={API_KEY}'
@@ -342,6 +435,7 @@ def get_champion_skin_splash_art(champion_name, skin_number):
 
 
 def main():
+
     # Prompt the user for their choice
     print("Choose an option:")
     print("1. See current champion rotation")
@@ -352,6 +446,7 @@ def main():
     print("6. Get a champion's splash art")
     print("7. Get a champion's skin splash art")
     print("8. Get a champion's current stats")
+    print("9. Get a champion's counters")
     choice = input("Enter your choice: ")
 
     if choice == '1':
@@ -485,6 +580,9 @@ def main():
         else:
             print("Champion not found.")
 
+    elif choice == '9':
+        champion_name = input("Enter a champion name: ")
+        get_champion_counters(champion_name)
 
     else:
         print("Invalid choice.")
