@@ -308,6 +308,23 @@ def get_champion_recommended_runes(champion_name):
     for shard in list(dict.fromkeys(stat_shards)):
         print(shard.replace('The','').replace('Shard', '').strip())
 
+def get_champion_recommended_spells(champion_name):
+    # HTML content of the div
+    div_content = extract_div_html(f'https://u.gg/lol/champions/{champion_name.lower()}/build', 'content-section_content summoner-spells')
+
+    # Create a BeautifulSoup object to parse the HTML
+    soup = BeautifulSoup(div_content, 'html.parser')
+
+    # Find the div that contains the summoner spells
+    summoner_spells_div = soup.find('div', class_='content-section_content summoner-spells')
+
+    # Extract the summoner spell images and get their alt attributes
+    summoner_spell_images = summoner_spells_div.find_all('img')
+    summoner_spell_names = [img['alt'] for img in summoner_spell_images]
+
+    # Print the summoner spell names
+    for spell_name in summoner_spell_names:
+        print(spell_name.replace('Summoner Spell', '').strip())
 
 def get_champion_rotation():
     url = f'https://euw1.api.riotgames.com/lol/platform/v3/champion-rotations?api_key={API_KEY}'
@@ -526,6 +543,7 @@ def main():
     print("8. Get a champion's current stats")
     print("9. Get a champion's counters")
     print("10. Get a champion's recommended runes")
+    print("11. Get a champion's recommended spells")
     choice = input("Enter your choice: ")
 
     if choice == '1':
@@ -669,6 +687,9 @@ def main():
         champion_name = input("Enter a champion name: ")
         get_champion_recommended_runes(champion_name)
 
+    elif choice == '11':
+        champion_name = input("Enter a champion name: ")
+        get_champion_recommended_spells(champion_name)
 
     else:
         print("Invalid choice.")
