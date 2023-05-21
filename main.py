@@ -177,9 +177,11 @@ def get_champion_counters(champion_name):
 
     soup = BeautifulSoup(html_code, 'html.parser')
 
-    # Extract Best Picks vs Irelia
+    champion_name = champion_name.capitalize()
+
+    # Extract Best Picks 
     best_picks_div = soup.find('div', class_='counters-column')
-    best_picks_title = best_picks_div.find('div', text='Best Picks vs Irelia')
+    best_picks_title = best_picks_div.find('div', text=f'Best Picks vs {champion_name}')
     best_picks_list = best_picks_title.find_next('div', class_='counters-list').find_all('a')
 
     best_picks = []
@@ -194,7 +196,7 @@ def get_champion_counters(champion_name):
             'total_games': total_games
         })
 
-    # Extract Worst Picks vs Irelia
+    # Extract Worst Picks 
     worst_picks_div = soup.find('div', class_='counters-list worst-win-rate')
     worst_picks_list = worst_picks_div.find_all('a')
 
