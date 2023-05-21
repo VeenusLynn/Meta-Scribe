@@ -162,6 +162,20 @@ def get_summoner_spell_info_by_name(spell_name):
     except requests.exceptions.RequestException as err:
         print(f"Error occurred: {err}")
 
+def get_champion_splash_art(champion_name):
+    champion_name = champion_name.capitalize()
+    url = f'https://ddragon.leagueoflegends.com/cdn/img/champion/splash/{champion_name}_0.jpg'
+
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+        return url
+
+    except requests.exceptions.HTTPError as err:
+        print(f"HTTP error occurred: {err}")
+    except requests.exceptions.RequestException as err:
+        print(f"Error occurred: {err}")
+
 def main():
     # Prompt the user for their choice
     print("Choose an option:")
@@ -170,7 +184,8 @@ def main():
     print("3. Get information about a specific item")
     print("4. Get information about a specific rune")
     print("5. Get information about a specific summoner spell")
-    choice = input("Enter your choice (1, 2, 3, 4 or 5): ")
+    print("6. Get a champion's splash art")
+    choice = input("Enter your choice: ")
 
     if choice == '1':
         # Get champion rotation
@@ -267,6 +282,13 @@ def main():
             print(f"Spell description: {spell_info['description']}")
             print(f"Spell cooldown: {spell_info['cooldownBurn']}")
             print(f"Summoner level required: {spell_info['summonerLevel']}")
+
+    elif choice == '6':
+        champion_name = input("Enter a champion name: ")
+        champion_splash_art = get_champion_splash_art(champion_name)
+
+        if champion_splash_art:
+            print(f"Splash art: {champion_splash_art}")
 
         else:
             print("Spell not found.")
