@@ -10,8 +10,25 @@ dotenv.load_dotenv()
 # Get API key from .env file
 API_KEY = os.getenv('API_KEY') 
 
-VERSION = os.getenv('VERSION')
 
+def get_version():
+    url = f'https://ddragon.leagueoflegends.com/api/versions.json'
+
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+        version_data = response.json()
+
+        return version_data[0]
+
+    except requests.exceptions.HTTPError as err:
+        print(f"HTTP error occurred: {err}")
+    except requests.exceptions.RequestException as err:
+        print(f"Error occurred: {err}")
+
+########################
+VERSION = get_version()#
+########################
 
 def get_champion_rotation():
     url = f'https://euw1.api.riotgames.com/lol/platform/v3/champion-rotations?api_key={API_KEY}'
@@ -86,7 +103,7 @@ def get_champion_id(champion_name):
         print(f"Error occurred: {err}")
 
 def get_item_info_by_name(item_name):
-    item_name = item_name.capitalize()
+
     url = f'https://ddragon.leagueoflegends.com/cdn/{VERSION}/data/en_US/item.json'
 
     try:
@@ -104,6 +121,46 @@ def get_item_info_by_name(item_name):
     except requests.exceptions.RequestException as err:
         print(f"Error occurred: {err}")
 
+def get_rune_info_by_name(rune_name):
+    url = f'https://ddragon.leagueoflegends.com/cdn/{VERSION}/data/en_US/runesReforged.json'
+
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+        rune_data = response.json()
+
+        for rune in rune_data:
+            for slot in rune['slots']:
+                for rune_info in slot['runes']:
+                    if rune_info['name'].lower() == rune_name.lower():
+                        return rune_info
+
+        return None
+
+    except requests.exceptions.HTTPError as err:
+        print(f"HTTP error occurred: {err}")
+    except requests.exceptions.RequestException as err:
+        print(f"Error occurred: {err}")
+
+def get_summoner_spell_info_by_name(spell_name):
+    url = f'https://ddragon.leagueoflegends.com/cdn/{VERSION}/data/en_US/summoner.json'
+
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+        spell_data = response.json()
+
+        spell_data = spell_data['data']
+        for spell in spell_data.values():
+            if spell['name'].lower() == spell_name.lower():
+                return spell
+
+        return None
+
+    except requests.exceptions.HTTPError as err:
+        print(f"HTTP error occurred: {err}")
+    except requests.exceptions.RequestException as err:
+        print(f"Error occurred: {err}")
 
 def main():
     # Prompt the user for their choice
@@ -111,7 +168,9 @@ def main():
     print("1. See current champion rotation")
     print("2. Get information about a specific champion")
     print("3. Get information about a specific item")
-    choice = input("Enter your choice (1, 2 or 3): ")
+    print("4. Get information about a specific rune")
+    print("5. Get information about a specific summoner spell")
+    choice = input("Enter your choice (1, 2, 3, 4 or 5): ")
 
     if choice == '1':
         # Get champion rotation
@@ -132,9 +191,8 @@ def main():
     elif choice == '2':
         # Prompt the user for a champion name
         champion_name = input("Enter a champion name: ")
-        # champion_id = get_champion_id(champion_name) 
-
         champion_info = get_champion_info_by_name(champion_name)
+        
         if champion_info:
             print(f"Champion ID: {champion_info['key']}")
             print(f"Name: {champion_info['name']}")
@@ -170,7 +228,6 @@ def main():
             print(f"R Description: {champion_info['spells'][3]['description']}")
 
 
-            # TO DO : Add more champion info
         else:
             print("Champion not found.")
     
@@ -187,7 +244,33 @@ def main():
             print(f"Item stats:\n{soup.get_text()}")
             print(f"Item cost: {item_info['gold']['total']} Gold")
             
-    
+    elif choice == '4':
+        rune_name = input("Enter a rune name: ")
+        rune_info = get_rune_info_by_name(rune_name)
+        soup = BeautifulSoup(rune_info['longDesc'], 'html.parser')
+        for br in soup.find_all('br'):
+            br.replace_with('\n')
+
+        if rune_info:
+            print(f"Rune name: {rune_info['name']}")
+            print(f"Rune description:\n{soup.get_text()}")
+
+        else:
+            print("Rune not found.")
+
+    elif choice == '5':
+        spell_name = input("Enter a summoner spell name: ")
+        spell_info = get_summoner_spell_info_by_name(spell_name)
+
+        if spell_info:
+            print(f"Spell name: {spell_info['name']}")
+            print(f"Spell description: {spell_info['description']}")
+            print(f"Spell cooldown: {spell_info['cooldownBurn']}")
+            print(f"Summoner level required: {spell_info['summonerLevel']}")
+
+        else:
+            print("Spell not found.")
+
     else:
         print("Invalid choice. Please select either 1, 2 or 3.")
 

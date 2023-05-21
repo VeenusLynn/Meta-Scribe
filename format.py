@@ -18,6 +18,6 @@ def save_json_in_readable_format(json_url):
         json.dump(data, output_file, indent=4)
 
 # Provide the URL of the JSON file
-json_url = 'https://ddragon.leagueoflegends.com/cdn/13.9.1/data/en_US/item.json'
+json_url = 'https://ddragon.leagueoflegends.com/cdn/13.10.1/data/en_US/summoner.json'
 
 save_json_in_readable_format(json_url)
