@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 
 
 def print_champion_tier(champion_name):
-    url = f'https://u.gg/lol/champions/{champion_name}/build'
+    url = f'https://u.gg/lol/champions/{champion_name}/build?rank=overall'
 
     # Set custom headers to mimic a web browser
     headers = {

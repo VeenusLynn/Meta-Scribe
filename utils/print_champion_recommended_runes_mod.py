@@ -5,7 +5,7 @@ from .extract_div_html_mod import extract_div_html
 
 def print_champion_recommended_runes(champion_name):
 
-    html_code = extract_div_html(f'https://u.gg/lol/champions/{champion_name.lower()}/build', 'rune-trees-container-2 media-query media-query_MOBILE_LARGE__DESKTOP_LARGE')
+    html_code = extract_div_html(f'https://u.gg/lol/champions/{champion_name.lower()}/build?rank=overall', 'rune-trees-container-2 media-query media-query_MOBILE_LARGE__DESKTOP_LARGE')
 
     soup = BeautifulSoup(html_code, 'html.parser')
 

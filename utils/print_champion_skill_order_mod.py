@@ -4,7 +4,7 @@ from .extract_div_html_mod import extract_div_html
 
 def print_champion_skill_order(champion_name):
 
-    html = extract_div_html(f'https://u.gg/lol/champions/{champion_name.lower()}/build', 'skill-path-container')
+    html = extract_div_html(f'https://u.gg/lol/champions/{champion_name.lower()}/build?rank=overall', 'skill-path-container')
 
     soup = BeautifulSoup(html, 'html.parser')
     skill_order_rows = soup.find_all(class_='skill-order-row')
