@@ -2,23 +2,7 @@ import dotenv
 import os
 
 
-from utils import get_version
-from utils import print_champion_banrate
-from utils import print_champion_info_by_name
-from utils import print_champion_pickrate
-from utils import print_champion_rotation
-from utils import print_champion_skin_splash_art
-from utils import print_champion_splash_art
-from utils import print_champion_winrate
-from utils import print_item_info_by_name
-from utils import print_rune_info_by_name
-from utils import print_summoner_spell_info_by_name
-from utils import print_champion_tier
-from utils import print_champion_skill_order
-from utils import print_champion_counters
-from utils import print_champion_recommended_runes
-from utils import print_champion_recommended_spells
-from utils import print_champion_recommended_build
+from utils import * 
 
 
 dotenv.load_dotenv()
