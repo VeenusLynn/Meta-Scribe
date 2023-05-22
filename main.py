@@ -1,21 +1,16 @@
 import dotenv
 import os
 
-
 from utils import * 
-
 
 dotenv.load_dotenv()
 
 # Get API key from .env file
 API_KEY = os.getenv("API_KEY")
 
-
-
 #######################
 VERSION = get_version()#
 ########################
-
 
 def main():
 
