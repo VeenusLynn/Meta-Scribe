@@ -27,12 +27,14 @@ dotenv.load_dotenv()
 API_KEY = os.getenv("API_KEY")
 
 
-########################
-VERSION = get_version()  #
+
 #######################
+VERSION = get_version()#
+########################
 
 
 def main():
+
     # Prompt the user for their choice
     print("Choose an option:")
     print("1. See current champion rotation")
@@ -108,6 +110,7 @@ def main():
         champion_name = input("Enter a champion name: ")
         print_champion_recommended_build(champion_name)
 
+
     elif choice == "13":
         champion_name = input("Enter a champion name: ")
         print_champion_skill_order(champion_name)
@@ -116,5 +119,5 @@ def main():
         print("Invalid choice.")
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()
