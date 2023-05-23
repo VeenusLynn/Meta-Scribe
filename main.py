@@ -221,6 +221,7 @@ async def champion_counters(ctx, champion_name: str):
             message += f"\r**Champion Name**: {i['champion_name']}"
             message += f"\r**Win Rate**: {i['win_rate']}"
             message += f"\r**Total Games**: {i['total_games']}"
+            message += f"\n"
         
         message += f"""
 \r**Worst Picks vs {champion_name}**:
@@ -229,6 +230,7 @@ async def champion_counters(ctx, champion_name: str):
             message += f"\r**Champion Name**: {i['champion_name']}"
             message += f"\r**Win Rate**: {i['win_rate']}"
             message += f"\r**Total Games**: {i['total_games']}"
+            message += f"\n"
         
         await ctx.send(message)
     
