@@ -5,49 +5,54 @@ from .extract_div_html_mod import extract_div_html
 
 def print_champion_counters(champion_name):
 
-    # Extract the HTML code of the div with class 'content'
-    html_code = extract_div_html(f'https://u.gg/lol/champions/{champion_name.lower()}/counter?rank=overall', 'champion-profile-page')
+    try:
+        # Extract the HTML code of the div with class 'content'
+        html_code = extract_div_html(f'https://u.gg/lol/champions/{champion_name.lower()}/counter?rank=overall', 'champion-profile-page')
 
-    soup = BeautifulSoup(html_code, 'html.parser')
+        soup = BeautifulSoup(html_code, 'html.parser')
 
-    champion_name = champion_name.capitalize()
-    tmp = champion_name
+        champion_name = champion_name.capitalize()
+        tmp = champion_name
 
-    # Extract Best Picks 
-    best_picks_div = soup.find('div', class_='counters-column')
-    best_picks_title = best_picks_div.find('div', text=f'Best Picks vs {champion_name}')
-    best_picks_list = best_picks_title.find_next('div', class_='counters-list').find_all('a')
+        # Extract Best Picks 
+        best_picks_div = soup.find('div', class_='counters-column')
+        best_picks_title = best_picks_div.find('div', text=f'Best Picks vs {champion_name}')
+        best_picks_list = best_picks_title.find_next('div', class_='counters-list').find_all('a')
 
-    best_picks = []
-    for pick in best_picks_list:
-        champion_name = pick.find('div', class_='champion-name').text
-        win_rate = pick.find('div', class_='win-rate').text
-        total_games = pick.find('div', class_='total-games').text
+        best_picks = []
+        for pick in best_picks_list:
+            champion_name = pick.find('div', class_='champion-name').text
+            win_rate = pick.find('div', class_='win-rate').text
+            total_games = pick.find('div', class_='total-games').text
 
-        best_picks.append({
-            'champion_name': champion_name,
-            'win_rate': win_rate.replace('WR',''),
-            'total_games': total_games
-        })
+            best_picks.append({
+                'champion_name': champion_name,
+                'win_rate': win_rate.replace('WR',''),
+                'total_games': total_games
+            })
 
-    # Extract Worst Picks 
-    worst_picks_div = soup.find('div', class_='counters-list worst-win-rate')
-    worst_picks_list = worst_picks_div.find_all('a')
+        # Extract Worst Picks 
+        worst_picks_div = soup.find('div', class_='counters-list worst-win-rate')
+        worst_picks_list = worst_picks_div.find_all('a')
 
-    worst_picks = []
-    for pick in worst_picks_list:
-        champion_name = pick.find('div', class_='champion-name').text
-        win_rate = pick.find('div', class_='win-rate').text
-        total_games = pick.find('div', class_='total-games').text
+        worst_picks = []
+        for pick in worst_picks_list:
+            champion_name = pick.find('div', class_='champion-name').text
+            win_rate = pick.find('div', class_='win-rate').text
+            total_games = pick.find('div', class_='total-games').text
 
-        worst_picks.append({
-            # 'champion_image': champion_image,
-            'champion_name': champion_name,
-            'win_rate': win_rate.replace('WR',''),
-            'total_games': total_games
-        })
+            worst_picks.append({
+                # 'champion_image': champion_image,
+                'champion_name': champion_name,
+                'win_rate': win_rate.replace('WR',''),
+                'total_games': total_games
+            })
 
-    return best_picks, worst_picks 
+        return best_picks, worst_picks 
+
+    except:
+        print("Champion not found.")
+        return None, None
 
     # champion_name = tmp
 

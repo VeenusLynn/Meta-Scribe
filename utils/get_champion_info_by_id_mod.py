@@ -27,6 +27,7 @@ def get_champion_info_by_id(champion_id):
 
     except requests.exceptions.HTTPError as err:
         print(f"HTTP error occurred: {err}")
+        return None
     except requests.exceptions.RequestException as err:
         print(f"Error occurred: {err}")
         return None

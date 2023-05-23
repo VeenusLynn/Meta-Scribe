@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 import dotenv
 import os
+from bs4 import BeautifulSoup
 
 from utils import *
 
@@ -12,7 +13,7 @@ API_KEY = os.getenv("API_KEY")
 
 # Create an instance of the bot
 intents = discord.Intents.all()
-bot = commands.Bot(command_prefix='/', intents=intents)
+bot = commands.Bot(command_prefix='!', intents=intents)
 bot.remove_command('help')
 
 
@@ -26,7 +27,24 @@ async def on_ready():
     description="See the current champion rotation"
 )
 async def champion_rotation(ctx):
-    await ctx.send(print_champion_rotation())
+
+    try:
+        await ctx.send("Please wait while we fetch the champion rotation...")
+        champion_rotation = print_champion_rotation()
+        message = """
+    **Champion Rotation:**\n
+        """
+        if champion_rotation:
+            for champion_id in champion_rotation:
+                champion_info = get_champion_info_by_id(champion_id)
+                if champion_info:
+                    message += f"**Champion ID**: {champion_id}\n"
+                    message += f"**Name**: {champion_info['name']}\n"
+                    message += f"**Title**: {champion_info['title']}\n\n"
+
+        await ctx.send(message)
+    except:
+        await ctx.send("Failed to fetch champion rotation.")
 
 
 @bot.command(
@@ -34,8 +52,10 @@ async def champion_rotation(ctx):
     description="Get information about a specific champion"
 )
 async def champion_info(ctx, champion_name: str):
-    champ = print_champion_info_by_name(champion_name)
-    info = f"""
+
+    try:
+        champ = print_champion_info_by_name(champion_name)
+        info = f"""
 **Name**: {champ['name']}
 **Title**: {champ['title']}
 **Lore**: {champ['lore']}
@@ -43,9 +63,9 @@ async def champion_info(ctx, champion_name: str):
 **Type**: {champ['tags']}
 **Ally Tips**: {champ['allytips']}
 **Enemy Tips**: {champ['enemytips']}
-    """
+        """
 
-    abilities = f"""
+        abilities = f"""
 **Passive**: {champ['passive']['name']}
 **Passive Description**: {champ['passive']['description']}
 **Q**: {champ['spells'][0]['name']}
@@ -56,9 +76,12 @@ async def champion_info(ctx, champion_name: str):
 **E Description**: {champ['spells'][2]['description']}
 **R**: {champ['spells'][3]['name']}
 **R Description**: {champ['spells'][3]['description']}
-    """
-    await ctx.send(info)
-    await ctx.send(abilities)
+        """
+        await ctx.send(info)
+        await ctx.send(abilities)
+    
+    except:
+        await ctx.send("Champion not found.")
 
 
 @bot.command(
@@ -66,7 +89,23 @@ async def champion_info(ctx, champion_name: str):
     description="Get information about a specific item"
 )
 async def item_info(ctx, item_name: str):
-    await ctx.send(print_item_info_by_name(item_name))
+
+    try:
+        item = print_item_info_by_name(item_name)
+        soup = BeautifulSoup(item["description"], "html.parser")
+        for br in soup.find_all("br"):
+            br.replace_with("\n")
+        
+        info = f"""
+**Item name**: {item['name']}
+**Item stats**:\n{soup.get_text()}
+**Item cost**: {item['gold']['total']} Gold
+        """
+
+        await ctx.send(info)
+    
+    except:
+        await ctx.send("Item not found.")
 
 
 @bot.command(
@@ -74,7 +113,20 @@ async def item_info(ctx, item_name: str):
     description="Get information about a specific rune"
 )
 async def rune_info(ctx, rune_name: str):
-    await ctx.send(print_rune_info_by_name(rune_name))
+
+    try:
+        rune = print_rune_info_by_name(rune_name)
+        soup = BeautifulSoup(rune["longDesc"], "html.parser")
+        for br in soup.find_all("br"):
+            br.replace_with("\n")
+        info = f"""
+**Rune name**: {rune['name']}
+**Rune description**:\n{soup.get_text()}
+        """
+        await ctx.send(info)
+
+    except:
+        await ctx.send("Rune not found.")
 
 
 @bot.command(
@@ -82,7 +134,20 @@ async def rune_info(ctx, rune_name: str):
     description="Get information about a specific summoner spell"
 )
 async def summoner_spell_info(ctx, spell_name: str):
-    await ctx.send(print_summoner_spell_info_by_name(spell_name))
+
+    try:
+        spell = print_summoner_spell_info_by_name(spell_name)
+
+        info = f"""
+**Spell name**: {spell['name']}
+**Spell description**: {spell['description']}
+**Cooldown**: {spell['cooldownBurn']} seconds
+**Summoner level required**: {spell['summonerLevel']}
+        """
+        await ctx.send(info)
+
+    except:
+        await ctx.send("Summoner spell not found.")
 
 
 @bot.command(
@@ -90,26 +155,54 @@ async def summoner_spell_info(ctx, spell_name: str):
     description="Get a champion's splash art"
 )
 async def champion_splash_art(ctx, champion_name: str):
-    await ctx.send(print_champion_splash_art(champion_name))
 
+    try:
+        splash_art_url = print_champion_splash_art(champion_name)
+        # load image from url and send it to the channel
+        await ctx.send(splash_art_url)
+    except:
+        await ctx.send("Champion not found.")
 
 @bot.command(
     name="championskinsplashart",
     description="Get a champion's skin splash art"
 )
 async def champion_skin_splash_art(ctx, champion_name: str, skin_number: int):
-    await ctx.send(print_champion_skin_splash_art(champion_name, skin_number))
 
+    try:
+        splash_art_url = print_champion_skin_splash_art(champion_name, skin_number)
+        # load image from url and send it to the channel
+        await ctx.send(splash_art_url)
+    
+    except:
+        await ctx.send("Skin not found.")
 
 @bot.command(
     name="championstats",
     description="Get a champion's current stats"
 )
 async def champion_stats(ctx, champion_name: str):
-    await ctx.send(f"{print_champion_tier(champion_name)}\n"
-                   f"{print_champion_winrate(champion_name)}\n"
-                   f"{print_champion_pickrate(champion_name)}\n"
-                   f"{print_champion_banrate(champion_name)}")
+    
+        try:
+            await ctx.send("Please wait while we fetch the champion stats...")
+
+            tier = print_champion_tier(champion_name)
+            winrate = print_champion_winrate(champion_name)
+            pickrate = print_champion_pickrate(champion_name)
+            banrate = print_champion_banrate(champion_name)
+
+
+            stats = f"""
+**Current stats for {champion_name}**:
+**Tier**: {tier}
+**Winrate**: {winrate}
+**Pickrate**: {pickrate}
+**Banrate**: {banrate}
+            """
+            await ctx.send(stats)
+
+        except:
+            await ctx.send("Champion not found.")
 
 
 @bot.command(
@@ -117,31 +210,129 @@ async def champion_stats(ctx, champion_name: str):
     description="Get a champion's counters"
 )
 async def champion_counters(ctx, champion_name: str):
-    await ctx.send(print_champion_counters(champion_name))
+    
+    try:
+        await ctx.send("Please wait while we fetch the champion counters...")
+        best_picks, worst_picks = print_champion_counters(champion_name)
+        message = f"""
+**Best Picks vs {champion_name}**:\n
+        """
+        for i in best_picks:
+            message += f"**Champion Name**: {i['champion_name']}\n"
+            message += f"**Win Rate**: {i['win_rate']}\n"
+            message += f"**Total Games**: {i['total_games']}\n\n"
+        
+        message += f"""
+**Worst Picks vs {champion_name}**:\n
+        """
+        for i in worst_picks:
+            message += f"**Champion Name**: {i['champion_name']}\n"
+            message += f"**Win Rate**: {i['win_rate']}\n"
+            message += f"**Total Games**: {i['total_games']}\n\n"
+        
+        await ctx.send(message)
+    
+    except:
+        await ctx.send("Champion not found.")
+
+
 
 
 @bot.command(
-    name="championrecommendedrunes",
+    name="championrunes",
     description="Get a champion's recommended runes"
 )
 async def champion_recommended_runes(ctx, champion_name: str):
-    await ctx.send(print_champion_recommended_runes(champion_name))
+    
+    try:
+        await ctx.send("Please wait while we fetch the champion runes...")
+        primary_tree_name, primary_runes, secondary_tree_name, secondary_runes, stat_shards = print_champion_recommended_runes(champion_name)
+        message = f"""
+**Recommended runes for {champion_name}**:\n
+**Primary Tree**: {primary_tree_name}\n
+**Primary Runes**:\n
+        """
+        for rune in list(dict.fromkeys(primary_runes)):
+            message += f"{rune.replace('The Rune', '').replace('The Keystone', '').strip()}\n"
+
+        message += f"""
+**Secondary Tree**: {secondary_tree_name}\n
+**Secondary Runes**:\n
+        """
+        for rune in list(dict.fromkeys(secondary_runes)):
+            message += f"{rune.replace('The Rune', '').strip()}\n"
+
+        message += f"""
+**Stat Shards**:\n
+        """
+        for shard in list(dict.fromkeys(stat_shards)):
+            message += f"{shard.replace('The', '').replace('Shard', '').strip()}\n"
+
+        await ctx.send(message)
+
+    except:
+        await ctx.send("Champion not found.")
 
 
 @bot.command(
-    name="championrecommendedspells",
+    name="championspells",
     description="Get a champion's recommended spells"
 )
 async def champion_recommended_spells(ctx, champion_name: str):
-    await ctx.send(print_champion_recommended_spells(champion_name))
 
+    try:
+        await ctx.send("Please wait while we fetch the champion spells...")
+        spells = print_champion_recommended_spells(champion_name)
+        message = f"""
+**Recommended spells for {champion_name}**:\n
+        """
+        for spell in spells:
+            message += f"{spell.replace('Summoner Spell', '').strip()}\n"
+
+        await ctx.send(message)
+        
+    except:
+        await ctx.send("Champion not found.")
 
 @bot.command(
-    name="championrecommendedbuild",
+    name="championbuild",
     description="Get a champion's recommended build"
 )
 async def champion_recommended_build(ctx, champion_name: str):
-    await ctx.send(print_champion_recommended_build(champion_name))
+    
+    try: 
+        await ctx.send("Please wait while we fetch the champion build...")
+        starter_items, core_build, boots, final_build = print_champion_recommended_build(champion_name)
+        message = f"""
+**Recommended build for {champion_name}**:\n
+**Starter items**:\n
+        """
+        for item in starter_items:
+            message += f"{item}\n"
+            
+        message += f"""
+**Core build**:\n
+        """
+        for item in core_build:
+            message += f"{item}\n"
+
+        message += f"""
+**Boots**:\n
+        """
+        for item in boots:
+            message += f"{item}\n"
+
+        message += f"""
+**Final build**:\n
+        """
+        for item in final_build:
+            message += f"{item}\n"
+
+        await ctx.send(message)
+
+    except:
+        await ctx.send("Champion not found.")
+
 
 
 @bot.command(
@@ -149,7 +340,22 @@ async def champion_recommended_build(ctx, champion_name: str):
     description="Get a champion's recommended skill order"
 )
 async def champion_skill_order(ctx, champion_name: str):
-    await ctx.send(print_champion_skill_order(champion_name))
+    
+    try:
+        await ctx.send("Please wait while we fetch the champion skill order...")
+        skill_order = print_champion_skill_order(champion_name)
+        message = f"""
+**Recommended skill order for {champion_name}**:\n
+        """
+        for skill in skill_order:
+            message += f"**Ability**: {skill['skill_label']}\n"
+            message += f"**Level**: {skill['skill_levels']}\n\n"
+        
+        await ctx.send(message)
+
+    except:
+        await ctx.send("Champion not found.")
+
 
 
 @bot.command(
@@ -158,20 +364,20 @@ async def champion_skill_order(ctx, champion_name: str):
 )
 async def help_command(ctx):
     help_text = """
-    Available commands:
-    - /championrotation: See current champion rotation
-    - /championinfo <champion_name>: Get information about a specific champion
-    - /iteminfo <item_name>: Get information about a specific item
-    - /runeinfo <rune_name>: Get information about a specific rune
-    - /summonerspellinfo <spell_name>: Get information about a specific summoner spell
-    - /championsplashart <champion_name>: Get a champion's splash art
-    - /championskinsplashart <champion_name> <skin_number>: Get a champion's skin splash art
-    - /championstats <champion_name>: Get a champion's current stats
-    - /championcounters <champion_name>: Get a champion's counters
-    - /championrecommendedrunes <champion_name>: Get a champion's recommended runes
-    - /championrecommendedspells <champion_name>: Get a champion's recommended spells
-    - /championrecommendedbuild <champion_name>: Get a champion's recommended build
-    - /championskillorder <champion_name>: Get a champion's recommended skill order
+Available commands:
+- !championrotation: See current champion rotation
+- !championinfo <champion_name>: Get information about a specific champion
+- !iteminfo <item_name>: Get information about a specific item
+- !runeinfo <rune_name>: Get information about a specific rune
+- !summonerspellinfo <spell_name>: Get information about a specific summoner spell
+- !championsplashart <champion_name>: Get a champion's splash art
+- !championskinsplashart <champion_name> <skin_number>: Get a champion's skin splash art
+- !championstats <champion_name>: Get a champion's current stats
+- !championcounters <champion_name>: Get a champion's counters
+- !championrecommendedrunes <champion_name>: Get a champion's recommended runes
+- !championrecommendedspells <champion_name>: Get a champion's recommended spells
+- !championrecommendedbuild <champion_name>: Get a champion's recommended build
+- !championskillorder <champion_name>: Get a champion's recommended skill order
     """
 
     await ctx.send(help_text)

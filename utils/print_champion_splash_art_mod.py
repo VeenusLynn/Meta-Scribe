@@ -19,10 +19,13 @@ def print_champion_splash_art(champion_name):
             return champion_splash_art
         else:
             print("Splash art not found.")
+            return None
 
     except requests.exceptions.HTTPError as err:
         print(f"HTTP error occurred: {err}")
+        return None
     except requests.exceptions.RequestException as err:
         print(f"Error occurred: {err}")
+        return None
 
 # "Splash art: {champion_splash_art}"

@@ -17,5 +17,7 @@ def get_version():
 
     except requests.exceptions.HTTPError as err:
         print(f"HTTP error occurred: {err}")
+        return None
     except requests.exceptions.RequestException as err:
         print(f"Error occurred: {err}")
+        return None

@@ -32,8 +32,10 @@ def extract_div_html(url, div_class):
         
         else:
             print(f"Div with class '{div_class}' not found.")
+            return None
     
     else:
         print(f"Request failed with status code {response.status_code}.")
+        return None
     
     return None

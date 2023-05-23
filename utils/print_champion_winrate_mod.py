@@ -32,6 +32,7 @@ def print_champion_winrate(champion_name):
                 return win_rate
             else:
                 print("Champion not found.")
+                return None
     else:
         # Request was unsuccessful
         print(f"Failed to retrieve winrate. Status code: {response.status_code}")

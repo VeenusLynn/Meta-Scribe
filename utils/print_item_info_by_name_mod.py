@@ -8,7 +8,7 @@ VERSION = get_version()  #
 ########################
 
 
-def get_item_info_by_name(item_name):
+def print_item_info_by_name(item_name):
     url = f"https://ddragon.leagueoflegends.com/cdn/{VERSION}/data/en_US/item.json"
 
     headers = {
@@ -23,13 +23,7 @@ def get_item_info_by_name(item_name):
         item_data = item_data["data"]
         for item in item_data.values():
             if item["name"].lower() == item_name.lower():
-               
-                soup = BeautifulSoup(item["description"], "html.parser")
-                for br in soup.find_all("br"):
-                    br.replace_with("\n")
-
-        if item:
-            return item   
+                return item   
 
     except requests.exceptions.HTTPError as err:
         print(f"HTTP error occurred: {err}")

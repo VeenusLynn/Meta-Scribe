@@ -28,11 +28,14 @@ def print_champion_rotation():
             return champion_rotation
         else:
             print("Failed to fetch champion rotation.")
+            return None
 
     except requests.exceptions.HTTPError as err:
         print(f"HTTP error occurred: {err}")
+        return None
     except requests.exceptions.RequestException as err:
         print(f"Error occurred: {err}")
+        return None
 
 # print("Champion Rotation:")
 # print("------")

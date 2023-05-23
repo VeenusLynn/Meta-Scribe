@@ -26,11 +26,14 @@ def print_summoner_spell_info_by_name(spell_name):
                     return spell
                 else :
                     print("Spell not found")
+                    return None
 
     except requests.exceptions.HTTPError as err:
         print(f"HTTP error occurred: {err}")
+        return None
     except requests.exceptions.RequestException as err:
         print(f"Error occurred: {err}")
+        return None
 
 # print(f"Spell name: {spell['name']}")
 # print(f"Spell description: {spell['description']}")

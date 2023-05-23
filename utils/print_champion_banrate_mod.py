@@ -34,10 +34,12 @@ def print_champion_banrate(champion_name):
                 return ban_rate
             else:
                 print("Champion not found.")
+                return None
                 
     else:
         # Request was unsuccessful
         print(f"Failed to retrieve ban rate. Status code: {response.status_code}")
+        return None
 
 
 # "ban rate: {ban_rate}"

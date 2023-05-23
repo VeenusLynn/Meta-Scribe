@@ -24,13 +24,8 @@ def print_rune_info_by_name(rune_name):
             for slot in rune["slots"]:
                 for rune_info in slot["runes"]:
                     if rune_info["name"].lower() == rune_name.lower():
-                        soup = BeautifulSoup(rune_info["longDesc"], "html.parser")
-                        for br in soup.find_all("br"):
-                            br.replace_with("\n")
-
-        if rune_info:
-            return rune_info
-
+                        return rune_info
+                        
         else:
             print("Rune not found.")
 
