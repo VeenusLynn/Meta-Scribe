@@ -22,6 +22,23 @@ async def on_ready():
     print(f'Bot is ready.')
     await bot.change_presence(interactions.ClientPresence(activities=[interactions.PresenceActivity(name=f"League Of Legends", type=interactions.PresenceActivityType.WATCHING)]))
 
+@bot.command(
+    name="fr",
+    description="Changer la langue du bot en français"
+)
+async def fr(ctx: interactions.CommandContext):
+    global language
+    language = "fr_FR"
+    await ctx.send("La langue du bot est maintenant en français.")
+
+@bot.command(
+    name="en",
+    description="Change the bot's language to English"
+)
+async def en(ctx: interactions.CommandContext):
+    global language
+    language = "en_US"
+    await ctx.send("The bot's language is now in English.")
 
 @bot.command(
     name="championrotation",
@@ -37,7 +54,7 @@ async def champion_rotation(ctx: interactions.CommandContext):
         """
         if champion_rotation:
             for champion_id in champion_rotation:
-                champion_info = get_champion_info_by_id(champion_id)
+                champion_info = get_champion_info_by_id(champion_id, language)
                 if champion_info:
                     message += f"\r**Champion ID**: {champion_id}"
                     message += f"\r**Name**: {champion_info['name']}"
@@ -63,7 +80,7 @@ async def champion_rotation(ctx: interactions.CommandContext):
 async def champion_info(ctx: interactions.CommandContext, champion_name: str):
 
     try:
-        champ = print_champion_info_by_name(champion_name)
+        champ = print_champion_info_by_name(champion_name, language)
         info = f"""
 **Name**: {champ['name']}
 **Title**: {champ['title']}
@@ -108,7 +125,7 @@ async def champion_info(ctx: interactions.CommandContext, champion_name: str):
 async def item_info(ctx: interactions.CommandContext, item_name: str):
 
     try:
-        item = print_item_info_by_name(item_name)
+        item = print_item_info_by_name(item_name, language)
         soup = BeautifulSoup(item["description"], "html.parser")
         for br in soup.find_all("br"):
             br.replace_with("\n")
@@ -140,7 +157,7 @@ async def item_info(ctx: interactions.CommandContext, item_name: str):
 async def rune_info(ctx: interactions.CommandContext, rune_name: str):
 
     try:
-        rune = print_rune_info_by_name(rune_name)
+        rune = print_rune_info_by_name(rune_name, language)
         soup = BeautifulSoup(rune["longDesc"], "html.parser")
         for br in soup.find_all("br"):
             br.replace_with("\n")
@@ -169,7 +186,7 @@ async def rune_info(ctx: interactions.CommandContext, rune_name: str):
 async def summoner_spell_info(ctx: interactions.CommandContext, spell_name: str):
 
     try:
-        spell = print_summoner_spell_info_by_name(spell_name)
+        spell = print_summoner_spell_info_by_name(spell_name, language)
 
         info = f"""
 **Spell name**: {spell['name']}

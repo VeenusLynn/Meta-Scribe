@@ -7,8 +7,8 @@ VERSION = get_version()  #
 ########################
 
 
-def get_champion_info_by_id(champion_id):
-    url = f'https://ddragon.leagueoflegends.com/cdn/{VERSION}/data/en_US/championFull.json'
+def get_champion_info_by_id(champion_id, language):
+    url = f'https://ddragon.leagueoflegends.com/cdn/{VERSION}/data/{language}/championFull.json'
 
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'
