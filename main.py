@@ -34,7 +34,31 @@ async def champion_rotation(ctx):
     description="Get information about a specific champion"
 )
 async def champion_info(ctx, champion_name: str):
-    await ctx.send(print_champion_info_by_name(champion_name))
+    champ = print_champion_info_by_name(champion_name)
+    info = f"""
+**Name**: {champ['name']}
+**Title**: {champ['title']}
+**Lore**: {champ['lore']}
+**Difficulty**: {champ['info']['difficulty']}
+**Type**: {champ['tags']}
+**Ally Tips**: {champ['allytips']}
+**Enemy Tips**: {champ['enemytips']}
+    """
+
+    abilities = f"""
+**Passive**: {champ['passive']['name']}
+**Passive Description**: {champ['passive']['description']}
+**Q**: {champ['spells'][0]['name']}
+**Q Description**: {champ['spells'][0]['description']}
+**W**: {champ['spells'][1]['name']}
+**W Description**: {champ['spells'][1]['description']}
+**E**: {champ['spells'][2]['name']}
+**E Description**: {champ['spells'][2]['description']}
+**R**: {champ['spells'][3]['name']}
+**R Description**: {champ['spells'][3]['description']}
+    """
+    await ctx.send(info)
+    await ctx.send(abilities)
 
 
 @bot.command(
