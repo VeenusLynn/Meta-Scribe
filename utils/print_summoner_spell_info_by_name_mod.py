@@ -23,10 +23,7 @@ def print_summoner_spell_info_by_name(spell_name):
         for spell in spell_data.values():
             if spell["name"].lower() == spell_name.lower():
                 if spell:
-                    print(f"Spell name: {spell['name']}")
-                    print(f"Spell description: {spell['description']}")
-                    print(f"Spell cooldown: {spell['cooldownBurn']}")
-                    print(f"Summoner level required: {spell['summonerLevel']}")
+                    return spell
                 else :
                     print("Spell not found")
 
@@ -34,3 +31,8 @@ def print_summoner_spell_info_by_name(spell_name):
         print(f"HTTP error occurred: {err}")
     except requests.exceptions.RequestException as err:
         print(f"Error occurred: {err}")
+
+# print(f"Spell name: {spell['name']}")
+# print(f"Spell description: {spell['description']}")
+# print(f"Spell cooldown: {spell['cooldownBurn']}")
+# print(f"Summoner level required: {spell['summonerLevel']}")

@@ -29,10 +29,13 @@ def print_champion_winrate(champion_name):
             win_rate = win_rate_element.text.strip().replace("WR", "")
 
             if win_rate:
-                print(f"Win rate: {win_rate}")
+                return win_rate
             else:
                 print("Champion not found.")
     else:
         # Request was unsuccessful
         print(f"Failed to retrieve winrate. Status code: {response.status_code}")
         return None
+
+
+# "Win rate: {win_rate}"

@@ -16,6 +16,9 @@ def print_champion_recommended_spells(champion_name):
     summoner_spell_images = summoner_spells_div.find_all('img')
     summoner_spell_names = [img['alt'] for img in summoner_spell_images]
 
-    # Print the summoner spell names
-    for spell_name in summoner_spell_names:
-        print(spell_name.replace('Summoner Spell', '').strip())
+    return summoner_spell_names
+
+    # # Print the summoner spell names
+    # for spell_name in summoner_spell_names:
+    #     print(spell_name.replace('Summoner Spell', '').strip())
+

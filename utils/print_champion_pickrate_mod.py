@@ -33,9 +33,12 @@ def print_champion_pickrate(champion_name):
             )
 
             if pick_rate:
-                print(f"pick rate: {pick_rate}")
+                return pick_rate
             else:
                 print("Champion not found.")
     else:
         # Request was unsuccessful
         print(f"Failed to retrieve pick rate. Status code: {response.status_code}")
+
+
+# "pick rate: {pick_rate}"
