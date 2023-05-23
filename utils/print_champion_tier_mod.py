@@ -27,12 +27,12 @@ def print_champion_tier(champion_name):
         if tier_element:
             # Extract the text from the element and add a space after the percentage sign
             tier = tier_element.text.strip().replace('Tier', '')
-            print(f"Tier: {tier}")
             return tier
-        
 
     else:
         # Request was unsuccessful
         print(f"Failed to retrieve winrate. Status code: {response.status_code}")
         return None
+    
+# "Tier: {tier}"
     

@@ -25,15 +25,7 @@ def print_champion_rotation():
         champion_rotation = rotation_data["freeChampionIds"]
 
         if champion_rotation:
-            print("Champion Rotation:")
-            print("------")
-            for champion_id in champion_rotation:
-                champion_info = get_champion_info_by_id(champion_id)
-                if champion_info:
-                    print(f"Champion ID: {champion_id}")
-                    print(f"Name: {champion_info['name']}")
-                    print(f"Title: {champion_info['title']}")
-                    print("------")
+            return champion_rotation
         else:
             print("Failed to fetch champion rotation.")
 
@@ -41,3 +33,13 @@ def print_champion_rotation():
         print(f"HTTP error occurred: {err}")
     except requests.exceptions.RequestException as err:
         print(f"Error occurred: {err}")
+
+# print("Champion Rotation:")
+# print("------")
+# for champion_id in champion_rotation:
+#     champion_info = get_champion_info_by_id(champion_id)
+#     if champion_info:
+#         print(f"Champion ID: {champion_id}")
+#         print(f"Name: {champion_info['name']}")
+#         print(f"Title: {champion_info['title']}")
+#         print("------")

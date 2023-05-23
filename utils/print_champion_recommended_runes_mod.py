@@ -27,18 +27,20 @@ def print_champion_recommended_runes(champion_name):
     secondary_runes = [inspiration_keystone.img['alt']] + [rune.img['alt'] for rune in inspiration_runes]
     stat_shards = [shard.img['alt'] for shard in stat_shards_active]
 
-    print(f"Recommended Runes for {champion_name.capitalize()}: \n")
+    return primary_tree_name, primary_runes, secondary_tree_name, secondary_runes, stat_shards
 
-    print(f"Primary Tree : {primary_tree_name}\n ")
-    print("Primary Runes:")
-    for rune in list(dict.fromkeys(primary_runes)):
-        print(rune.replace('The Rune', '').replace("The Keystone",'').strip())
+    # print(f"Recommended Runes for {champion_name.capitalize()}: \n")
 
-    print(f"\nSecondary Tree : {secondary_tree_name}\n")
-    print("Secondary Runes:")
-    for rune in list(dict.fromkeys(secondary_runes)):
-        print(rune.replace('The Rune', '').strip())
+    # print(f"Primary Tree : {primary_tree_name}\n ")
+    # print("Primary Runes:")
+    # for rune in list(dict.fromkeys(primary_runes)):
+    #     print(rune.replace('The Rune', '').replace("The Keystone",'').strip())
 
-    print("\nStat Shards:")
-    for shard in list(dict.fromkeys(stat_shards)):
-        print(shard.replace('The','').replace('Shard', '').strip())
+    # print(f"\nSecondary Tree : {secondary_tree_name}\n")
+    # print("Secondary Runes:")
+    # for rune in list(dict.fromkeys(secondary_runes)):
+    #     print(rune.replace('The Rune', '').strip())
+
+    # print("\nStat Shards:")
+    # for shard in list(dict.fromkeys(stat_shards)):
+    #     print(shard.replace('The','').replace('Shard', '').strip())

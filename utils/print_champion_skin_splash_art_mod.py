@@ -16,7 +16,7 @@ def print_champion_skin_splash_art(champion_name, skin_number):
         champion_skin_splash_art = url          
 
         if champion_skin_splash_art:
-            print(f"Splash art: {champion_skin_splash_art}")
+            return champion_skin_splash_art
         else:
             print("Skin not found.")
 
@@ -24,3 +24,5 @@ def print_champion_skin_splash_art(champion_name, skin_number):
         print(f"HTTP error occurred: {err}")
     except requests.exceptions.RequestException as err:
         print(f"Error occurred: {err}")
+
+# "Splash art: {champion_skin_splash_art}"

@@ -47,22 +47,26 @@ def print_champion_counters(champion_name):
             'total_games': total_games
         })
 
-    champion_name = tmp
+    return best_picks, worst_picks 
+
+    # champion_name = tmp
 
 
     # Print the extracted information
-    print(f'\nBest Picks vs {champion_name}:\n')
-    print("----------------------------------")
-    for pick in best_picks:
-        print(f"Champion Name: {pick['champion_name']}")
-        print(f"Win Rate: {pick['win_rate']}")
-        print(f"Total Games: {pick['total_games']}")
-        print("----------------------------------")
+    # print(f'\nBest Picks vs {champion_name}:\n')
+    # print("----------------------------------")
+    # for pick in best_picks:
+    #     print(f"Champion Name: {pick['champion_name']}")
+    #     print(f"Win Rate: {pick['win_rate']}")
+    #     print(f"Total Games: {pick['total_games']}")
+    #     print("----------------------------------")
 
-    print(f'\nWorst Picks vs {champion_name}:\n')
-    print("----------------------------------")
-    for pick in worst_picks:
-        print(f"Champion Name: {pick['champion_name']}")
-        print(f"Win Rate: {pick['win_rate']}")
-        print(f"Total Games: {pick['total_games']}")
-        print("----------------------------------")
+    # print(f'\nWorst Picks vs {champion_name}:\n')
+    # print("----------------------------------")
+    # for pick in worst_picks:
+    #     print(f"Champion Name: {pick['champion_name']}")
+    #     print(f"Win Rate: {pick['win_rate']}")
+    #     print(f"Total Games: {pick['total_games']}")
+    #     print("----------------------------------")
+
+        

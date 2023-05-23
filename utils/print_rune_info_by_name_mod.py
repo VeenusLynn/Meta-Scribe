@@ -29,8 +29,7 @@ def print_rune_info_by_name(rune_name):
                             br.replace_with("\n")
 
         if rune_info:
-            print(f"Rune name: {rune_info['name']}")
-            print(f"Rune description:\n{soup.get_text()}")
+            return rune_info
 
         else:
             print("Rune not found.")
@@ -39,3 +38,10 @@ def print_rune_info_by_name(rune_name):
         print(f"HTTP error occurred: {err}")
     except requests.exceptions.RequestException as err:
         print(f"Error occurred: {err}")
+
+# soup = BeautifulSoup(rune_info["longDesc"], "html.parser")
+# for br in soup.find_all("br"):
+#     br.replace_with("\n")
+
+# print(f"Rune name: {rune_info['name']}")
+# print(f"Rune description:\n{soup.get_text()}")
