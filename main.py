@@ -32,15 +32,15 @@ async def champion_rotation(ctx):
         await ctx.send("Please wait while we fetch the champion rotation...")
         champion_rotation = print_champion_rotation()
         message = """
-    **Champion Rotation:**\n
+\r**Champion Rotation:**
         """
         if champion_rotation:
             for champion_id in champion_rotation:
                 champion_info = get_champion_info_by_id(champion_id)
                 if champion_info:
-                    message += f"**Champion ID**: {champion_id}\n"
-                    message += f"**Name**: {champion_info['name']}\n"
-                    message += f"**Title**: {champion_info['title']}\n\n"
+                    message += f"\r**Champion ID**: {champion_id}"
+                    message += f"\r**Name**: {champion_info['name']}"
+                    message += f"\r**Title**: {champion_info['title']}"
 
         await ctx.send(message)
     except:
@@ -215,20 +215,20 @@ async def champion_counters(ctx, champion_name: str):
         await ctx.send("Please wait while we fetch the champion counters...")
         best_picks, worst_picks = print_champion_counters(champion_name)
         message = f"""
-**Best Picks vs {champion_name}**:\n
+\r**Best Picks vs {champion_name}**:
         """
         for i in best_picks:
-            message += f"**Champion Name**: {i['champion_name']}\n"
-            message += f"**Win Rate**: {i['win_rate']}\n"
-            message += f"**Total Games**: {i['total_games']}\n\n"
+            message += f"\r**Champion Name**: {i['champion_name']}"
+            message += f"\r**Win Rate**: {i['win_rate']}"
+            message += f"\r**Total Games**: {i['total_games']}"
         
         message += f"""
-**Worst Picks vs {champion_name}**:\n
+\r**Worst Picks vs {champion_name}**:
         """
         for i in worst_picks:
-            message += f"**Champion Name**: {i['champion_name']}\n"
-            message += f"**Win Rate**: {i['win_rate']}\n"
-            message += f"**Total Games**: {i['total_games']}\n\n"
+            message += f"\r**Champion Name**: {i['champion_name']}"
+            message += f"\r**Win Rate**: {i['win_rate']}"
+            message += f"\r**Total Games**: {i['total_games']}"
         
         await ctx.send(message)
     
@@ -248,25 +248,25 @@ async def champion_recommended_runes(ctx, champion_name: str):
         await ctx.send("Please wait while we fetch the champion runes...")
         primary_tree_name, primary_runes, secondary_tree_name, secondary_runes, stat_shards = print_champion_recommended_runes(champion_name)
         message = f"""
-**Recommended runes for {champion_name}**:\n
-**Primary Tree**: {primary_tree_name}\n
-**Primary Runes**:\n
+\r**Recommended runes for {champion_name}**:
+\r**Primary Tree**: {primary_tree_name}
+\r**Primary Runes**:
         """
         for rune in list(dict.fromkeys(primary_runes)):
-            message += f"{rune.replace('The Rune', '').replace('The Keystone', '').strip()}\n"
+            message += f"\r{rune.replace('The Rune', '').replace('The Keystone', '').strip()}"
 
         message += f"""
-**Secondary Tree**: {secondary_tree_name}\n
-**Secondary Runes**:\n
+\r**Secondary Tree**: {secondary_tree_name}
+\r**Secondary Runes**:
         """
         for rune in list(dict.fromkeys(secondary_runes)):
-            message += f"{rune.replace('The Rune', '').strip()}\n"
+            message += f"\r{rune.replace('The Rune', '').strip()}"
 
         message += f"""
-**Stat Shards**:\n
+\r**Stat Shards**:
         """
         for shard in list(dict.fromkeys(stat_shards)):
-            message += f"{shard.replace('The', '').replace('Shard', '').strip()}\n"
+            message += f"\r{shard.replace('The', '').replace('Shard', '').strip()}"
 
         await ctx.send(message)
 
@@ -284,10 +284,10 @@ async def champion_recommended_spells(ctx, champion_name: str):
         await ctx.send("Please wait while we fetch the champion spells...")
         spells = print_champion_recommended_spells(champion_name)
         message = f"""
-**Recommended spells for {champion_name}**:\n
+\r**Recommended spells for {champion_name}**:
         """
         for spell in spells:
-            message += f"{spell.replace('Summoner Spell', '').strip()}\n"
+            message += f"\r{spell.replace('Summoner Spell', '').strip()}"
 
         await ctx.send(message)
         
@@ -304,29 +304,29 @@ async def champion_recommended_build(ctx, champion_name: str):
         await ctx.send("Please wait while we fetch the champion build...")
         starter_items, core_build, boots, final_build = print_champion_recommended_build(champion_name)
         message = f"""
-**Recommended build for {champion_name}**:\n
-**Starter items**:\n
+\r**Recommended build for {champion_name}**:
+\r**Starter items**:
         """
         for item in starter_items:
-            message += f"{item}\n"
+            message += f"\r{item}"
             
         message += f"""
-**Core build**:\n
+\r**Core build**:
         """
         for item in core_build:
-            message += f"{item}\n"
+            message += f"\r{item}"
 
         message += f"""
-**Boots**:\n
+\r**Boots**:
         """
         for item in boots:
-            message += f"{item}\n"
+            message += f"\r{item}"
 
         message += f"""
-**Final build**:\n
+\r**Final build**:
         """
         for item in final_build:
-            message += f"{item}\n"
+            message += f"\r{item}"
 
         await ctx.send(message)
 
@@ -345,11 +345,11 @@ async def champion_skill_order(ctx, champion_name: str):
         await ctx.send("Please wait while we fetch the champion skill order...")
         skill_order = print_champion_skill_order(champion_name)
         message = f"""
-**Recommended skill order for {champion_name}**:\n
+\r**Recommended skill order for {champion_name}**:
         """
         for skill in skill_order:
-            message += f"**Ability**: {skill['skill_label']}\n"
-            message += f"**Level**: {skill['skill_levels']}\n\n"
+            message += f"\r**Ability**: {skill['skill_label']}"
+            message += f"\r**Level**: {skill['skill_levels']}"
         
         await ctx.send(message)
 
