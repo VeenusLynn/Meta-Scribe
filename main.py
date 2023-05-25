@@ -4,8 +4,11 @@ import dotenv
 import os
 import interactions
 from bs4 import BeautifulSoup
+from time import sleep
 
 from utils import *
+
+# from keep_alive import keep_alive
 
 dotenv.load_dotenv()
 
@@ -17,36 +20,92 @@ bot = interactions.Client(token=os.getenv("DISCORD_TOKEN"))
 
 
 
-@bot.event
+@interactions.listen()
 async def on_ready():
     print(f'Bot is ready.')
-    await bot.change_presence(interactions.ClientPresence(activities=[interactions.PresenceActivity(name=f"League Of Legends", type=interactions.PresenceActivityType.WATCHING)]))
+    # await bot.change_presence(status=discord.Status.online, activity=discord.Game(name="League of Legends")) TO FIX
 
-@bot.command(
+@interactions.slash_command(
     name="fr",
     description="Changer la langue du bot en français"
 )
-async def fr(ctx: interactions.CommandContext):
+async def fr(ctx: interactions.SlashContext):
     global language
     language = "fr_FR"
+    await ctx.defer()
     await ctx.send("La langue du bot est maintenant en français.")
 
-@bot.command(
+@interactions.slash_command(
     name="en",
     description="Change the bot's language to English"
 )
-async def en(ctx: interactions.CommandContext):
+async def en(ctx: interactions.SlashContext):
     global language
     language = "en_US"
+    await ctx.defer()
     await ctx.send("The bot's language is now in English.")
 
-@bot.command(
+@interactions.slash_command(
+    name="bestmidlaner",
+    description="Get the best midlaner"
+)
+async def best_midlaner(ctx: interactions.SlashContext):
+    try:
+        await ctx.defer()
+
+        await ctx.send("Please wait while we fetch the best midlaner...")
+        sleep(3)
+        await ctx.send("Best midlaner in the world is not1cyyy#EUW")
+    except:
+        await ctx.send("Failed to fetch best midlaner.")
+
+@interactions.slash_command(
+    name="besttoplaner",
+    description="Get the best toplaner"
+)
+async def best_toplaner(ctx: interactions.SlashContext):
+    try:
+        await ctx.defer()
+        await ctx.send("Please wait while we fetch the best toplaner...")
+        sleep(3)
+        await ctx.send("Best toplaner in the world is DistortLynn#EUW")
+    except:
+        await ctx.send("Failed to fetch best toplaner.")
+
+@interactions.slash_command(
+    name="bestsupport",
+    description="Get the best support"
+)
+async def best_support(ctx: interactions.SlashContext):
+    try:
+        await ctx.defer()
+        await ctx.send("Please wait while we fetch the best support...")
+        sleep(3)
+        await ctx.send("Best support in the world is Eve SatOrU#EUW")
+    except:
+        await ctx.send("Failed to fetch best support.")
+
+@interactions.slash_command(
+    name="bestadc",
+    description="Get the best adc"
+)
+async def best_adc(ctx: interactions.SlashContext):
+    try:
+        await ctx.defer()
+        await ctx.send("Please wait while we fetch the best adc...")
+        sleep(3)
+        await ctx.send("Best adc in the world is Hi im Lon#EUW")
+    except:
+        await ctx.send("Failed to fetch best adc.")
+
+@interactions.slash_command(
     name="championrotation",
     description="See the current champion rotation"
     )
-async def champion_rotation(ctx: interactions.CommandContext):
+async def champion_rotation(ctx: interactions.SlashContext):
 
     try:
+        await ctx.defer()
         await ctx.send("Please wait while we fetch the champion rotation...")
         champion_rotation = print_champion_rotation()
         message = """
@@ -65,11 +124,11 @@ async def champion_rotation(ctx: interactions.CommandContext):
         await ctx.send("Failed to fetch champion rotation.")
 
 
-@bot.command(
+@interactions.slash_command(
     name="championinfo",
     description="Get information about a specific champion",
         options = [
-        interactions.Option(
+        interactions.SlashCommandOption(
             name="champion_name",
             description="Which champion do you want to get information about?",
             type=interactions.OptionType.STRING,
@@ -77,9 +136,10 @@ async def champion_rotation(ctx: interactions.CommandContext):
         ),
     ]
 )
-async def champion_info(ctx: interactions.CommandContext, champion_name: str):
+async def champion_info(ctx: interactions.SlashContext, champion_name: str):
 
     try:
+        await ctx.defer()
         champ = print_champion_info_by_name(champion_name, language)
         info = f"""
 **Name**: {champ['name']}
@@ -110,11 +170,11 @@ async def champion_info(ctx: interactions.CommandContext, champion_name: str):
         await ctx.send("Champion not found.")
 
 
-@bot.command(
+@interactions.slash_command(
     name="iteminfo",
     description="Get information about a specific item",
         options = [
-        interactions.Option(
+        interactions.SlashCommandOption(
             name="item_name",
             description="Which item do you want to get information about?",
             type=interactions.OptionType.STRING,
@@ -122,9 +182,10 @@ async def champion_info(ctx: interactions.CommandContext, champion_name: str):
         ),
     ]
 )
-async def item_info(ctx: interactions.CommandContext, item_name: str):
+async def item_info(ctx: interactions.SlashContext, item_name: str):
 
     try:
+        await ctx.defer()
         item = print_item_info_by_name(item_name, language)
         soup = BeautifulSoup(item["description"], "html.parser")
         for br in soup.find_all("br"):
@@ -142,11 +203,11 @@ async def item_info(ctx: interactions.CommandContext, item_name: str):
         await ctx.send("Item not found.")
 
 
-@bot.command(
+@interactions.slash_command(
     name="runeinfo",
     description="Get information about a specific rune",
         options = [
-        interactions.Option(
+        interactions.SlashCommandOption(
             name="rune_name",
             description="Which rune do you want to get information about?",
             type=interactions.OptionType.STRING,
@@ -154,9 +215,10 @@ async def item_info(ctx: interactions.CommandContext, item_name: str):
         ),
     ]
 )
-async def rune_info(ctx: interactions.CommandContext, rune_name: str):
+async def rune_info(ctx: interactions.SlashContext, rune_name: str):
 
     try:
+        await ctx.defer()
         rune = print_rune_info_by_name(rune_name, language)
         soup = BeautifulSoup(rune["longDesc"], "html.parser")
         for br in soup.find_all("br"):
@@ -171,11 +233,11 @@ async def rune_info(ctx: interactions.CommandContext, rune_name: str):
         await ctx.send("Rune not found.")
 
 
-@bot.command(
+@interactions.slash_command(
     name="summonerspellinfo",
     description="Get information about a specific summoner spell",
         options = [
-        interactions.Option(
+        interactions.SlashCommandOption(
             name="spell_name",
             description="Which summoner spell do you want to get information about?",
             type=interactions.OptionType.STRING,
@@ -183,9 +245,10 @@ async def rune_info(ctx: interactions.CommandContext, rune_name: str):
         ),
     ]
 )
-async def summoner_spell_info(ctx: interactions.CommandContext, spell_name: str):
+async def summoner_spell_info(ctx: interactions.SlashContext, spell_name: str):
 
     try:
+        await ctx.defer()
         spell = print_summoner_spell_info_by_name(spell_name, language)
 
         info = f"""
@@ -200,11 +263,11 @@ async def summoner_spell_info(ctx: interactions.CommandContext, spell_name: str)
         await ctx.send("Summoner spell not found.")
 
 
-@bot.command(
+@interactions.slash_command(
     name="championsplashart",
     description="Get a champion's splash art",
         options = [
-        interactions.Option(
+        interactions.SlashCommandOption(
             name="champion_name",
             description="Which champion do you want to get information about?",
             type=interactions.OptionType.STRING,
@@ -212,26 +275,27 @@ async def summoner_spell_info(ctx: interactions.CommandContext, spell_name: str)
         ),
     ]
 )
-async def champion_splash_art(ctx: interactions.CommandContext, champion_name: str):
+async def champion_splash_art(ctx: interactions.SlashContext, champion_name: str):
 
     try:
+        await ctx.defer()
         splash_art_url = print_champion_splash_art(champion_name)
 
         await ctx.send(splash_art_url)
     except:
         await ctx.send("Champion not found.")
 
-@bot.command(
+@interactions.slash_command(
     name="championskinsplashart",
     description="Get a champion's skin splash art",
         options = [
-        interactions.Option(
+        interactions.SlashCommandOption(
             name="champion_name",
             description="Which champion do you want to get information about?",
             type=interactions.OptionType.STRING,
             required=True
         ),
-        interactions.Option(
+        interactions.SlashCommandOption(
             name="skin_number",
             description="Which skin do you want to get information about?",
             type=interactions.OptionType.INTEGER,
@@ -239,9 +303,10 @@ async def champion_splash_art(ctx: interactions.CommandContext, champion_name: s
         )
     ]
 )
-async def champion_skin_splash_art(ctx: interactions.CommandContext, champion_name: str, skin_number: int):
+async def champion_skin_splash_art(ctx: interactions.SlashContext, champion_name: str, skin_number: int):
 
     try:
+        await ctx.defer()
         splash_art_url = print_champion_skin_splash_art(champion_name, skin_number)
 
         await ctx.send(splash_art_url)
@@ -249,11 +314,11 @@ async def champion_skin_splash_art(ctx: interactions.CommandContext, champion_na
     except:
         await ctx.send("Skin not found.")
 
-@bot.command(
+@interactions.slash_command(
     name="championstats",
     description="Get a champion's current stats",
         options = [
-        interactions.Option(
+        interactions.SlashCommandOption(
             name="champion_name",
             description="Which champion do you want to get information about?",
             type=interactions.OptionType.STRING,
@@ -261,9 +326,10 @@ async def champion_skin_splash_art(ctx: interactions.CommandContext, champion_na
         ),
     ]
 )
-async def champion_stats(ctx: interactions.CommandContext, champion_name: str):
+async def champion_stats(ctx: interactions.SlashContext, champion_name: str):
     
         try:
+            await ctx.defer()
             await ctx.send("Please wait while we fetch the champion stats...")
 
             tier = print_champion_tier(champion_name)
@@ -285,11 +351,11 @@ async def champion_stats(ctx: interactions.CommandContext, champion_name: str):
             await ctx.send("Champion not found.")
 
 
-@bot.command(
+@interactions.slash_command(
     name="championcounters",
     description="Get a champion's counters",
         options = [
-        interactions.Option(
+        interactions.SlashCommandOption(
             name="champion_name",
             description="Which champion do you want to get information about?",
             type=interactions.OptionType.STRING,
@@ -297,9 +363,10 @@ async def champion_stats(ctx: interactions.CommandContext, champion_name: str):
         ),
     ]
 )
-async def champion_counters(ctx: interactions.CommandContext, champion_name: str):
+async def champion_counters(ctx: interactions.SlashContext, champion_name: str):
     
     try:
+        await ctx.defer()
         await ctx.send("Please wait while we fetch the champion counters...")
         best_picks, worst_picks = print_champion_counters(champion_name)
         message = f"""
@@ -328,11 +395,11 @@ async def champion_counters(ctx: interactions.CommandContext, champion_name: str
 
 
 
-@bot.command(
+@interactions.slash_command(
     name="championrunes",
     description="Get a champion's recommended runes",
         options = [
-        interactions.Option(
+        interactions.SlashCommandOption(
             name="champion_name",
             description="Which champion do you want to get information about?",
             type=interactions.OptionType.STRING,
@@ -340,9 +407,11 @@ async def champion_counters(ctx: interactions.CommandContext, champion_name: str
         ),
     ]
 )
-async def champion_recommended_runes(ctx: interactions.CommandContext, champion_name: str):
+
+async def champion_recommended_runes(ctx: interactions.SlashContext, champion_name: str):
     
     try:
+        await ctx.defer()
         await ctx.send("Please wait while we fetch the champion runes...")
         primary_tree_name, primary_runes, secondary_tree_name, secondary_runes, stat_shards = print_champion_recommended_runes(champion_name)
         message = f"""
@@ -372,11 +441,11 @@ async def champion_recommended_runes(ctx: interactions.CommandContext, champion_
         await ctx.send("Champion not found.")
 
 
-@bot.command(
+@interactions.slash_command(
     name="championspells",
     description="Get a champion's recommended spells",
         options = [
-        interactions.Option(
+        interactions.SlashCommandOption(
             name="champion_name",
             description="Which champion do you want to get information about?",
             type=interactions.OptionType.STRING,
@@ -384,9 +453,10 @@ async def champion_recommended_runes(ctx: interactions.CommandContext, champion_
         ),
     ]
 )
-async def champion_recommended_spells(ctx: interactions.CommandContext, champion_name: str):
+async def champion_recommended_spells(ctx: interactions.SlashContext, champion_name: str):
 
     try:
+        await ctx.defer()
         await ctx.send("Please wait while we fetch the champion spells...")
         spells = print_champion_recommended_spells(champion_name)
         message = f"""
@@ -400,11 +470,11 @@ async def champion_recommended_spells(ctx: interactions.CommandContext, champion
     except:
         await ctx.send("Champion not found.")
 
-@bot.command(
+@interactions.slash_command(
     name="championbuild",
     description="Get a champion's recommended build",
             options = [
-        interactions.Option(
+        interactions.SlashCommandOption(
             name="champion_name",
             description="Which champion do you want to get information about?",
             type=interactions.OptionType.STRING,
@@ -412,9 +482,10 @@ async def champion_recommended_spells(ctx: interactions.CommandContext, champion
         ),
     ]
 )
-async def champion_recommended_build(ctx: interactions.CommandContext, champion_name: str):
+async def champion_recommended_build(ctx: interactions.SlashContext, champion_name: str):
     
     try: 
+        await ctx.defer()
         await ctx.send("Please wait while we fetch the champion build...")
         starter_items, core_build, boots, final_build = print_champion_recommended_build(champion_name)
         message = f"""
@@ -449,11 +520,11 @@ async def champion_recommended_build(ctx: interactions.CommandContext, champion_
 
 
 
-@bot.command(
+@interactions.slash_command(
     name="championskillorder",
     description="Get a champion's recommended skill order",
         options = [
-        interactions.Option(
+        interactions.SlashCommandOption(
             name="champion_name",
             description="Which champion do you want to get information about?",
             type=interactions.OptionType.STRING,
@@ -461,9 +532,10 @@ async def champion_recommended_build(ctx: interactions.CommandContext, champion_
         ),
     ]
 )
-async def champion_skill_order(ctx: interactions.CommandContext, champion_name: str):
+async def champion_skill_order(ctx: interactions.SlashContext, champion_name: str):
     
     try:
+        await ctx.defer()
         await ctx.send("Please wait while we fetch the champion skill order...")
         skill_order = print_champion_skill_order(champion_name)
         message = f"""
@@ -480,11 +552,12 @@ async def champion_skill_order(ctx: interactions.CommandContext, champion_name: 
 
 
 
-@bot.command(
+@interactions.slash_command(
     name="help",
     description="Show available commands"
 )
-async def help_command(ctx: interactions.CommandContext):
+async def help_command(ctx: interactions.SlashContext):
+    await ctx.defer()
     help_text = """
 Available commands:
 - /championrotation: See current champion rotation
@@ -496,13 +569,15 @@ Available commands:
 - /championskinsplashart <champion_name> <skin_number>: Get a champion's skin splash art
 - /championstats <champion_name>: Get a champion's current stats
 - /championcounters <champion_name>: Get a champion's counters
-- /championrecommendedrunes <champion_name>: Get a champion's recommended runes
-- /championrecommendedspells <champion_name>: Get a champion's recommended spells
-- /championrecommendedbuild <champion_name>: Get a champion's recommended build
+- /championrunes <champion_name>: Get a champion's recommended runes
+- /championspells <champion_name>: Get a champion's recommended spells
+- /championbuild <champion_name>: Get a champion's recommended build
 - /championskillorder <champion_name>: Get a champion's recommended skill order
     """
 
     await ctx.send(help_text)
 
 if __name__ == '__main__':
+
+    # keep_alive()
     bot.start()

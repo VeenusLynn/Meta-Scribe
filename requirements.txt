@@ -1,0 +1,7 @@
+discord
+discord.py
+python-dotenv
+beautifulsoup4
+discord-py-interactions
+requests
+flask
