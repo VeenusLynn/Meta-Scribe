@@ -5,3 +5,4 @@ beautifulsoup4
 discord-py-interactions
 requests
 flask
+lxml

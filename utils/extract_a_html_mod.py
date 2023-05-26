@@ -1,7 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
 
-
 def extract_a_html(url, target_href):
 
     try:
@@ -14,22 +13,18 @@ def extract_a_html(url, target_href):
 
         # Check if the request was successful
         if response.status_code == 200:
-            # Get the HTML content of the page
-            html_content = response.text
 
             # Create a BeautifulSoup object for parsing the HTML
-            soup = BeautifulSoup(html_content, 'html.parser')
+            soup = BeautifulSoup(response.text, 'html.parser')
 
             # Find all <a> tags with the specified href
             target_a_tags = soup.find_all('a', href=target_href)
 
             # Check if any <a> tags exist
             if target_a_tags:
-                # Concatenate the HTML codes of the <a> tags
-                a_html = ''.join(str(a_tag) for a_tag in target_a_tags)
 
                 # Return the concatenated <a> tag HTML codes
-                return a_html
+                return ''.join(str(a_tag) for a_tag in target_a_tags)
 
             else:
                 print(f"No <a> tags found with href '{target_href}'.")

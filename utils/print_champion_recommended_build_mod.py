@@ -4,10 +4,8 @@ from .extract_a_html_mod import extract_a_html
 
 def print_champion_recommended_build(champion_name):
         
-    try:
-        html = extract_a_html(f'https://www.leagueofgraphs.com/champions/builds/{champion_name.lower()}', f'/champions/items/{champion_name.lower()}')
-        
-        soup = BeautifulSoup(html, 'html.parser')
+    try:  
+        soup = BeautifulSoup(extract_a_html(f'https://www.leagueofgraphs.com/champions/builds/{champion_name.lower()}', f'/champions/items/{champion_name.lower()}'), 'lxml')
         item_divs = soup.find_all('div', class_='iconsRow')
         
         starter_items = []

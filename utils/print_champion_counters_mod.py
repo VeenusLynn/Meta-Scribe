@@ -1,15 +1,11 @@
 from bs4 import BeautifulSoup
 from .extract_div_html_mod import extract_div_html
 
-
-
 def print_champion_counters(champion_name):
 
     try:
-        # Extract the HTML code of the div with class 'content'
-        html_code = extract_div_html(f'https://u.gg/lol/champions/{champion_name.lower()}/counter?rank=overall', 'champion-profile-page')
 
-        soup = BeautifulSoup(html_code, 'html.parser')
+        soup = BeautifulSoup(extract_div_html(f'https://u.gg/lol/champions/{champion_name.lower()}/counter?rank=overall', 'champion-profile-page'), 'lxml')
 
         champion_name = champion_name.capitalize()
         tmp = champion_name

@@ -5,11 +5,9 @@ from .extract_div_html_mod import extract_div_html
 def print_champion_recommended_spells(champion_name):
         
     try:    
-        # HTML content of the div
-        div_content = extract_div_html(f'https://u.gg/lol/champions/{champion_name.lower()}/build?rank=overall', 'content-section_content summoner-spells')
 
         # Create a BeautifulSoup object to parse the HTML
-        soup = BeautifulSoup(div_content, 'html.parser')
+        soup = BeautifulSoup(extract_div_html(f'https://u.gg/lol/champions/{champion_name.lower()}/build?rank=overall', 'content-section_content summoner-spells'), 'lxml')
 
         # Find the div that contains the summoner spells
         summoner_spells_div = soup.find('div', class_='content-section_content summoner-spells')
