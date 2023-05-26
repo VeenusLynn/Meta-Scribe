@@ -1,14 +1,12 @@
-import discord
 from discord.ext import commands
 import dotenv
 import os
 import interactions
+from discord import Status, Activity, Game
 from bs4 import BeautifulSoup
 from time import sleep
 
 from utils import *
-
-# from keep_alive import keep_alive
 
 dotenv.load_dotenv()
 
@@ -19,11 +17,11 @@ API_KEY = os.getenv("API_KEY")
 bot = interactions.Client(token=os.getenv("DISCORD_TOKEN"))
 
 
-
 @interactions.listen()
 async def on_ready():
     print(f'Bot is ready.')
-    # await bot.change_presence(status=discord.Status.online, activity=discord.Game(name="League of Legends")) TO FIX
+    await bot.change_presence(activity=Game(name="League of Legends"))
+
 
 @interactions.slash_command(
     name="fr",
