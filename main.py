@@ -13,6 +13,9 @@ dotenv.load_dotenv()
 # Get API key from .env file
 API_KEY = os.getenv("API_KEY")
 
+global language
+language = "en_US"
+
 # Create an instance of the bot
 bot = interactions.Client(token=os.getenv("DISCORD_TOKEN"))
 
