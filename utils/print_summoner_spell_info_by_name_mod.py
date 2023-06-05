@@ -2,12 +2,13 @@ import requests
 from .get_version_mod import get_version
 
 
-########################
-VERSION = get_version()  #
-########################
-
 
 def print_summoner_spell_info_by_name(spell_name, language):
+
+    ########################
+    VERSION = get_version()  #
+    ########################
+
     url = f"https://ddragon.leagueoflegends.com/cdn/{VERSION}/data/{language}/summoner.json"
 
     headers = {

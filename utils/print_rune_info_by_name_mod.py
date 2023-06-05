@@ -3,12 +3,14 @@ from bs4 import BeautifulSoup
 from .get_version_mod import get_version
 
 
-########################
-VERSION = get_version()  #
-########################
 
 
 def print_rune_info_by_name(rune_name, language):
+
+    ########################
+    VERSION = get_version()  #
+    ########################
+
     url = f"https://ddragon.leagueoflegends.com/cdn/{VERSION}/data/{language}/runesReforged.json"
 
     headers = {

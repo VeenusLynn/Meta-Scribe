@@ -2,12 +2,14 @@ import requests
 from .get_version_mod import get_version
 
 
-########################
-VERSION = get_version()  #
-########################
 
 
 def get_champion_id(champion_name, language):
+
+    ########################
+    VERSION = get_version()  #
+    ########################
+
     url = f"https://ddragon.leagueoflegends.com/cdn/{VERSION}/data/{language}/championFull.json"
 
     headers = {
