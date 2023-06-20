@@ -1,10 +1,14 @@
 from discord.ext import commands
 import dotenv
 import os
-import interactions
+from interactions import *
 from discord import Status, Activity, Game
 from bs4 import BeautifulSoup
 from time import sleep
+from asyncio import TimeoutError
+from interactions.api.events import Component
+
+
 
 from utils import *
 
@@ -17,40 +21,40 @@ global language
 language = "en_US"
 
 # Create an instance of the bot
-bot = interactions.Client(token=os.getenv("DISCORD_TOKEN"))
+bot = Client(token=os.getenv("DISCORD_TOKEN"))
 
 
-@interactions.listen()
+@listen()
 async def on_ready():
     print(f'Bot is ready.')
     await bot.change_presence(activity=Game(name="League of Legends"))
 
 
-@interactions.slash_command(
+@slash_command(
     name="fr",
     description="Changer la langue du bot en français"
 )
-async def fr(ctx: interactions.SlashContext):
+async def fr(ctx: SlashContext):
     global language
     language = "fr_FR"
     await ctx.defer()
     await ctx.send("La langue du bot est maintenant en français.")
 
-@interactions.slash_command(
+@slash_command(
     name="en",
     description="Change the bot's language to English"
 )
-async def en(ctx: interactions.SlashContext):
+async def en(ctx: SlashContext):
     global language
     language = "en_US"
     await ctx.defer()
     await ctx.send("The bot's language is now in English.")
 
-@interactions.slash_command(
+@slash_command(
     name="bestmidlaner",
     description="Get the best midlaner"
 )
-async def best_midlaner(ctx: interactions.SlashContext):
+async def best_midlaner(ctx: SlashContext):
     try:
         await ctx.defer()
 
@@ -60,11 +64,11 @@ async def best_midlaner(ctx: interactions.SlashContext):
     except:
         await ctx.send("Failed to fetch best midlaner.")
 
-@interactions.slash_command(
+@slash_command(
     name="besttoplaner",
     description="Get the best toplaner"
 )
-async def best_toplaner(ctx: interactions.SlashContext):
+async def best_toplaner(ctx: SlashContext):
     try:
         await ctx.defer()
         await ctx.send("Please wait while we fetch the best toplaner...")
@@ -73,11 +77,11 @@ async def best_toplaner(ctx: interactions.SlashContext):
     except:
         await ctx.send("Failed to fetch best toplaner.")
 
-@interactions.slash_command(
+@slash_command(
     name="bestsupport",
     description="Get the best support"
 )
-async def best_support(ctx: interactions.SlashContext):
+async def best_support(ctx: SlashContext):
     try:
         await ctx.defer()
         await ctx.send("Please wait while we fetch the best support...")
@@ -86,11 +90,11 @@ async def best_support(ctx: interactions.SlashContext):
     except:
         await ctx.send("Failed to fetch best support.")
 
-@interactions.slash_command(
+@slash_command(
     name="bestadc",
     description="Get the best adc"
 )
-async def best_adc(ctx: interactions.SlashContext):
+async def best_adc(ctx: SlashContext):
     try:
         await ctx.defer()
         await ctx.send("Please wait while we fetch the best adc...")
@@ -99,11 +103,11 @@ async def best_adc(ctx: interactions.SlashContext):
     except:
         await ctx.send("Failed to fetch best adc.")
 
-@interactions.slash_command(
+@slash_command(
     name="championrotation",
     description="See the current champion rotation"
     )
-async def champion_rotation(ctx: interactions.SlashContext):
+async def champion_rotation(ctx: SlashContext):
 
     try:
         await ctx.defer()
@@ -125,23 +129,24 @@ async def champion_rotation(ctx: interactions.SlashContext):
         await ctx.send("Failed to fetch champion rotation.")
 
 
-@interactions.slash_command(
+@slash_command(
     name="championinfo",
     description="Get information about a specific champion",
         options = [
-        interactions.SlashCommandOption(
+        SlashCommandOption(
             name="champion_name",
             description="Which champion do you want to get information about?",
-            type=interactions.OptionType.STRING,
+            type=OptionType.STRING,
             required=True,
         ),
     ]
 )
-async def champion_info(ctx: interactions.SlashContext, champion_name: str):
+async def champion_info(ctx: SlashContext, champion_name: str):
 
     try:
         await ctx.defer()
         champ = print_champion_info_by_name(champion_name, language)
+        global info
         info = f"""
 **Name**: {champ['name']}
 **Title**: {champ['title']}
@@ -152,6 +157,7 @@ async def champion_info(ctx: interactions.SlashContext, champion_name: str):
 **Enemy Tips**: {champ['enemytips']}
         """
 
+        global abilities
         abilities = f"""
 **Passive**: {champ['passive']['name']}
 **Passive Description**: {champ['passive']['description']}
@@ -164,26 +170,72 @@ async def champion_info(ctx: interactions.SlashContext, champion_name: str):
 **R**: {champ['spells'][3]['name']}
 **R Description**: {champ['spells'][3]['description']}
         """
-        await ctx.send(info)
-        await ctx.send(abilities)
-    
+
+        components1: list[ActionRow] = [
+            ActionRow(
+                Button(
+                    custom_id="abilities",
+                    style=ButtonStyle.GREEN,
+                    label="Switch to Champion Abilities",
+                )
+            )
+        ]
+
+
+        await ctx.send(embed=Embed(title="Champion Info", description=info, color=0x32bb5a), components=components1)
+        # await ctx.send(embeds=Embed(title="Champion Abilities", description=abilities, color=0x30f2a0))
+
     except:
         await ctx.send("Champion not found.")
 
+@listen()
+async def on_component_champion_info(event: Component):
+    ctx = event.ctx
 
-@interactions.slash_command(
+    match ctx.custom_id:
+        case "abilities":
+
+            components2: list[ActionRow] = [
+                ActionRow(
+                    Button(
+                        custom_id="info",
+                        style=ButtonStyle.GREEN,
+                        label="Switch to Champion Info",
+                    )
+                )
+            ]
+
+            await ctx.edit_origin(embed=Embed(title="Champion Abilities", description=abilities, color=0x30f2a0), components=components2)
+
+        case "info":
+
+            components1: list[ActionRow] = [
+                ActionRow(
+                    Button(
+                        custom_id="abilities",
+                        style=ButtonStyle.GREEN,
+                        label="Switch to Champion Abilities",
+                    )
+                )
+            ]
+
+            await ctx.edit_origin(embed=Embed(title="Champion Info", description=info, color=0x32bb5a), components=components1)
+
+
+
+@slash_command(
     name="iteminfo",
     description="Get information about a specific item",
         options = [
-        interactions.SlashCommandOption(
+        SlashCommandOption(
             name="item_name",
             description="Which item do you want to get information about?",
-            type=interactions.OptionType.STRING,
+            type=OptionType.STRING,
             required=True,
         ),
     ]
 )
-async def item_info(ctx: interactions.SlashContext, item_name: str):
+async def item_info(ctx: SlashContext, item_name: str):
 
     try:
         await ctx.defer()
@@ -198,25 +250,25 @@ async def item_info(ctx: interactions.SlashContext, item_name: str):
 **Item cost**: {item['gold']['total']} Gold
         """
 
-        await ctx.send(info)
+        await ctx.send(embed=Embed(title="Item Info", description=info, color=0x73a66e))
     
     except:
         await ctx.send("Item not found.")
 
 
-@interactions.slash_command(
+@slash_command(
     name="runeinfo",
     description="Get information about a specific rune",
         options = [
-        interactions.SlashCommandOption(
+        SlashCommandOption(
             name="rune_name",
             description="Which rune do you want to get information about?",
-            type=interactions.OptionType.STRING,
+            type=OptionType.STRING,
             required=True,
         ),
     ]
 )
-async def rune_info(ctx: interactions.SlashContext, rune_name: str):
+async def rune_info(ctx: SlashContext, rune_name: str):
 
     try:
         await ctx.defer()
@@ -228,25 +280,25 @@ async def rune_info(ctx: interactions.SlashContext, rune_name: str):
 **Rune name**: {rune['name']}
 **Rune description**:\n{soup.get_text()}
         """
-        await ctx.send(info)
+        await ctx.send(embed=Embed(title="Rune Info", description=info, color=0x78eec1))
 
     except:
         await ctx.send("Rune not found.")
 
 
-@interactions.slash_command(
+@slash_command(
     name="summonerspellinfo",
     description="Get information about a specific summoner spell",
         options = [
-        interactions.SlashCommandOption(
+        SlashCommandOption(
             name="spell_name",
             description="Which summoner spell do you want to get information about?",
-            type=interactions.OptionType.STRING,
+            type=OptionType.STRING,
             required=True,
         ),
     ]
 )
-async def summoner_spell_info(ctx: interactions.SlashContext, spell_name: str):
+async def summoner_spell_info(ctx: SlashContext, spell_name: str):
 
     try:
         await ctx.defer()
@@ -258,25 +310,25 @@ async def summoner_spell_info(ctx: interactions.SlashContext, spell_name: str):
 **Cooldown**: {spell['cooldownBurn']} seconds
 **Summoner level required**: {spell['summonerLevel']}
         """
-        await ctx.send(info)
+        await ctx.send(embed=Embed(title="Summoner Spell Info", description=info, color=0x78eec1))
 
     except:
         await ctx.send("Summoner spell not found.")
 
 
-@interactions.slash_command(
+@slash_command(
     name="championsplashart",
     description="Get a champion's splash art",
         options = [
-        interactions.SlashCommandOption(
+        SlashCommandOption(
             name="champion_name",
             description="Which champion do you want to get information about?",
-            type=interactions.OptionType.STRING,
+            type=OptionType.STRING,
             required=True,
         ),
     ]
 )
-async def champion_splash_art(ctx: interactions.SlashContext, champion_name: str):
+async def champion_splash_art(ctx: SlashContext, champion_name: str):
 
     try:
         await ctx.defer()
@@ -286,25 +338,25 @@ async def champion_splash_art(ctx: interactions.SlashContext, champion_name: str
     except:
         await ctx.send("Champion not found.")
 
-@interactions.slash_command(
+@slash_command(
     name="championskinsplashart",
     description="Get a champion's skin splash art",
         options = [
-        interactions.SlashCommandOption(
+        SlashCommandOption(
             name="champion_name",
             description="Which champion do you want to get information about?",
-            type=interactions.OptionType.STRING,
+            type=OptionType.STRING,
             required=True
         ),
-        interactions.SlashCommandOption(
+        SlashCommandOption(
             name="skin_number",
             description="Which skin do you want to get information about?",
-            type=interactions.OptionType.INTEGER,
+            type=OptionType.INTEGER,
             required=True
         )
     ]
 )
-async def champion_skin_splash_art(ctx: interactions.SlashContext, champion_name: str, skin_number: int):
+async def champion_skin_splash_art(ctx: SlashContext, champion_name: str, skin_number: int):
 
     try:
         await ctx.defer()
@@ -315,19 +367,19 @@ async def champion_skin_splash_art(ctx: interactions.SlashContext, champion_name
     except:
         await ctx.send("Skin not found.")
 
-@interactions.slash_command(
+@slash_command(
     name="championstats",
     description="Get a champion's current stats",
         options = [
-        interactions.SlashCommandOption(
+        SlashCommandOption(
             name="champion_name",
             description="Which champion do you want to get information about?",
-            type=interactions.OptionType.STRING,
+            type=OptionType.STRING,
             required=True,
         ),
     ]
 )
-async def champion_stats(ctx: interactions.SlashContext, champion_name: str):
+async def champion_stats(ctx: SlashContext, champion_name: str):
     
         try:
             await ctx.defer()
@@ -346,70 +398,114 @@ async def champion_stats(ctx: interactions.SlashContext, champion_name: str):
 **Pickrate**: {pickrate}
 **Banrate**: {banrate}
             """
-            await ctx.send(stats)
+            await ctx.send(embed=Embed(title="Champion Stats", description=stats, color=0x73a66e))
 
         except:
             await ctx.send("Champion not found.")
 
 
-@interactions.slash_command(
+@slash_command(
     name="championcounters",
     description="Get a champion's counters",
         options = [
-        interactions.SlashCommandOption(
+        SlashCommandOption(
             name="champion_name",
             description="Which champion do you want to get information about?",
-            type=interactions.OptionType.STRING,
+            type=OptionType.STRING,
             required=True,
         ),
     ]
 )
-async def champion_counters(ctx: interactions.SlashContext, champion_name: str):
+async def champion_counters(ctx: SlashContext, champion_name: str):
     
     try:
         await ctx.defer()
         await ctx.send("Please wait while we fetch the champion counters...")
+        global champ 
+        champ = champion_name
         best_picks, worst_picks = print_champion_counters(champion_name)
-        message = f"""
-\r**Best Picks vs {champion_name.capitalize()}**:
+        global best
+        best = f"""
         """
         for i in best_picks:
-            message += f"\r**Champion Name**: {i['champion_name']}"
-            message += f"\r**Win Rate**: {i['win_rate']}"
-            message += f"\r**Total Games**: {i['total_games']}"
-            message += f"\n"
+            best += f"\r**Champion Name**: {i['champion_name']}"
+            best += f"\r**Win Rate**: {i['win_rate']}"
+            best += f"\r**Total Games**: {i['total_games']}"
+            best += f"\n"
         
-        message += f"""
-\r**Worst Picks vs {champion_name.capitalize()}**:
+        global worst
+        worst = f"""
         """
         for i in worst_picks:
-            message += f"\r**Champion Name**: {i['champion_name']}"
-            message += f"\r**Win Rate**: {i['win_rate']}"
-            message += f"\r**Total Games**: {i['total_games']}"
-            message += f"\n"
+            worst += f"\r**Champion Name**: {i['champion_name']}"
+            worst += f"\r**Win Rate**: {i['win_rate']}"
+            worst += f"\r**Total Games**: {i['total_games']}"
+            worst += f"\n"
+
+        components1: list[ActionRow] = [
+            ActionRow(
+                Button(
+                    custom_id="worst",
+                    style=ButtonStyle.GREEN,
+                    label="Switch to Worst picks",
+                )
+            )
+        ]
+
+
+        await ctx.send(embed=Embed(title=f"**Best Picks vs {champ.capitalize()}**", description=best, color=0xac3060), components=components1)
+
         
-        await ctx.send(message)
-    
+
     except:
         await ctx.send("Champion not found.")
 
 
+@listen()
+async def on_component_champion_counters(event: Component):
+    ctx = event.ctx
+
+    match ctx.custom_id:
+        case "worst":
+            components2: list[ActionRow] = [
+                ActionRow(
+                    Button(
+                        custom_id="best",
+                        style=ButtonStyle.GREEN,
+                        label="Switch to Best picks",
+                    )
+                )
+            ]
+
+            await ctx.edit_origin(embed=Embed(title=f"**Worst Picks vs {champ.capitalize()}**", description=worst, color=0xac75b0), components=components2)
+        case "best":
+            components1: list[ActionRow] = [
+                ActionRow(
+                    Button(
+                        custom_id="worst",
+                        style=ButtonStyle.GREEN,
+                        label="Switch to Worst picks",
+                    )
+                )
+            ]
+
+            await ctx.edit_origin(embed=Embed(title=f"**Best Picks vs {champ.capitalize()}**", description=best, color=0xac3060), components=components1)
 
 
-@interactions.slash_command(
+@slash_command(
     name="championrunes",
     description="Get a champion's recommended runes",
         options = [
-        interactions.SlashCommandOption(
+        SlashCommandOption(
             name="champion_name",
             description="Which champion do you want to get information about?",
-            type=interactions.OptionType.STRING,
+            type=OptionType.STRING,
             required=True,
         ),
     ]
 )
 
-async def champion_recommended_runes(ctx: interactions.SlashContext, champion_name: str):
+async def champion_recommended_runes(ctx: SlashContext, champion_name: str):
     
     try:
         await ctx.defer()
@@ -436,25 +532,25 @@ async def champion_recommended_runes(ctx: interactions.SlashContext, champion_na
         for shard in list(dict.fromkeys(stat_shards)):
             message += f"\r{shard.replace('The', '').replace('Shard', '').strip()}"
 
-        await ctx.send(message)
+        await ctx.send(embed=Embed(title="Champion Runes", description=message, color=0x73a66e))
 
     except:
         await ctx.send("Champion not found.")
 
 
-@interactions.slash_command(
+@slash_command(
     name="championspells",
     description="Get a champion's recommended spells",
         options = [
-        interactions.SlashCommandOption(
+        SlashCommandOption(
             name="champion_name",
             description="Which champion do you want to get information about?",
-            type=interactions.OptionType.STRING,
+            type=OptionType.STRING,
             required=True,
         ),
     ]
 )
-async def champion_recommended_spells(ctx: interactions.SlashContext, champion_name: str):
+async def champion_recommended_spells(ctx: SlashContext, champion_name: str):
 
     try:
         await ctx.defer()
@@ -466,24 +562,24 @@ async def champion_recommended_spells(ctx: interactions.SlashContext, champion_n
         for spell in spells:
             message += f"\r{spell.replace('Summoner Spell', '').strip()}"
 
-        await ctx.send(message)
+        await ctx.send(embed=Embed(title="Champion Spells", description=message, color=0x73a66e))
         
     except:
         await ctx.send("Champion not found.")
 
-@interactions.slash_command(
+@slash_command(
     name="championbuild",
     description="Get a champion's recommended build",
             options = [
-        interactions.SlashCommandOption(
+        SlashCommandOption(
             name="champion_name",
             description="Which champion do you want to get information about?",
-            type=interactions.OptionType.STRING,
+            type=OptionType.STRING,
             required=True,
         ),
     ]
 )
-async def champion_recommended_build(ctx: interactions.SlashContext, champion_name: str):
+async def champion_recommended_build(ctx: SlashContext, champion_name: str):
     
     try: 
         await ctx.defer()
@@ -514,26 +610,26 @@ async def champion_recommended_build(ctx: interactions.SlashContext, champion_na
         for item in final_build:
             message += f"\r{item}"
 
-        await ctx.send(message)
+        await ctx.send(embed=Embed(title="Champion Build", description=message, color=0x73a66e))
 
     except:
         await ctx.send("Champion not found.")
 
 
 
-@interactions.slash_command(
+@slash_command(
     name="championskillorder",
     description="Get a champion's recommended skill order",
         options = [
-        interactions.SlashCommandOption(
+        SlashCommandOption(
             name="champion_name",
             description="Which champion do you want to get information about?",
-            type=interactions.OptionType.STRING,
+            type=OptionType.STRING,
             required=True,
         ),
     ]
 )
-async def champion_skill_order(ctx: interactions.SlashContext, champion_name: str):
+async def champion_skill_order(ctx: SlashContext, champion_name: str):
     
     try:
         await ctx.defer()
@@ -546,18 +642,18 @@ async def champion_skill_order(ctx: interactions.SlashContext, champion_name: st
             message += f"\r**Ability**: {skill['skill_label']}"
             message += f"\r**Level**: {skill['skill_levels']}"
         
-        await ctx.send(message)
+        await ctx.send(embed=Embed(title="Champion Skill Order", description=message, color=0x73a66e))
 
     except:
         await ctx.send("Champion not found.")
 
 
 
-@interactions.slash_command(
+@slash_command(
     name="help",
     description="Show available commands"
 )
-async def help_command(ctx: interactions.SlashContext):
+async def help_command(ctx: SlashContext):
     await ctx.defer()
     help_text = """
 Available commands:
@@ -576,7 +672,7 @@ Available commands:
 - /championskillorder <champion_name>: Get a champion's recommended skill order
     """
 
-    await ctx.send(help_text)
+    await ctx.send(embed=Embed(title="Help", description=help_text, color=0x73a66e))
 
 if __name__ == '__main__':
 
